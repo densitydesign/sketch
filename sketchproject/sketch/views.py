@@ -14,6 +14,8 @@ class MongoHandler(object):
     This class interacts with Mongo Db instance 
     """
     
+    available_commands = ['insert', 'find_one', 'find', 'count']
+    
     def __init__(self, server=None, port=None):
         self.server = server or settings.MONGO_SERVER_HOSTNAME
         self.port = int(port or settings.MONGO_SERVER_PORT)
@@ -103,11 +105,12 @@ def api_call(request, collection, command, database=None):
     database = database or settings.MONGO_SERVER_DEFAULT_DB
     
     handler = MongoHandler()
-    handler.connect()
-
+    
     command = getattr(handler, command, None)
-    if not command:
+    if not command or command not in handler.available_commands:
         raise Exception("Command %s not supported" % command)
+
+    handler.connect()
     
     results = command(database, collection, request)
     if results:
