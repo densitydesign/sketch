@@ -9,4 +9,9 @@ urlpatterns = patterns('sketch.views',
     url(r'api/(?P<database>\w+)/(?P<collection>\w+)/(?P<command>\w+)/$', 'api_call'),
     
     
+    url(r'mapper/(?P<collection>\w+)/$', 'mapper_call'),
+    url(r'mapper/(?P<database>\w+)/(?P<collection>\w+)/$', 'mapper_call'),
+
+    
+    
 )

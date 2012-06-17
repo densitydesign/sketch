@@ -1,8 +1,9 @@
 from django.template import Context, loader
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, render_to_response
-import datetime
+from django.views.decorators.csrf import csrf_exempt
 
+import datetime
 import settings
 import pymongo
 import json
@@ -14,7 +15,7 @@ class MongoHandler(object):
     This class interacts with Mongo Db instance 
     """
     
-    available_commands = ['insert', 'find_one', 'find', 'count']
+    available_commands = ['find_one', 'find', 'count']
     
     def __init__(self, server=None, port=None):
         self.server = server or settings.MONGO_SERVER_HOSTNAME
@@ -39,14 +40,18 @@ class MongoHandler(object):
         return collection
         
         
+    def _insert(self, db_name, collection_name, document):
+    
+        collection = self.getCollection(db_name, collection_name)
+        return collection.insert(document)    
+    
+    
     def insert(self, db_name, collection_name, request):
     
         document = request.GET.get('document') or request.POST.get('document')
         document = self.parseJsonDict(document)       
-        
-        collection = self.getCollection(db_name, collection_name)
-        return collection.insert(document)    
-        
+        return self._insert(db_name, collection_name, document)
+    
     
     def find_one(self, db_name, collection_name, request): 
     
@@ -92,9 +97,10 @@ class MongoHandler(object):
             return {}
 
 
-def api_call(request, collection, command, database=None):
+
+def createBaseResponseObject():
     """
-    Main view to send commands to handler
+    Creates a dict used as a request in json responses
     """
 
     out = dict()
@@ -102,21 +108,68 @@ def api_call(request, collection, command, database=None):
     out['results'] = []
     out['errors'] = []
 
+    return out
+
+
+
+def api_call(request, collection, command, database=None):
+    """
+    Main view to send commands to handler
+    """
+    out = createBaseResponseObject()
+
     database = database or settings.MONGO_SERVER_DEFAULT_DB
     
     handler = MongoHandler()
     
-    command = getattr(handler, command, None)
-    if not command or command not in handler.available_commands:
+    commandMethod = getattr(handler, command, None)
+    if not commandMethod or command not in handler.available_commands:
         raise Exception("Command %s not supported" % command)
 
     handler.connect()
     
-    results = command(database, collection, request)
+    results = commandMethod(database, collection, request)
     if results:
         out['results'] = results
     
-    
+    handler.connection.close()
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
     
+
+
+#this loads an instance of mapper
+from mappermanager import mappingManager
+
+#temporarily remove crsf control to test easily with curl
+@csrf_exempt
+def mapper_call(request, collection, database=None):
+    """
+    View used to import data
+    """
+    
+    out = createBaseResponseObject()
+    
+    database = database or settings.MONGO_SERVER_DEFAULT_DB
+    handler = MongoHandler()
+    handler.connect()
+    
+    #mapping should come from url, in form of id
+    mapping = { '__key__' : 'id', 
+      '__upperName__' : { 'transform' : 'upperCase', 'args' : ['name'] },
+#      '__fullName__' : { 'transform' : 'concatStrings', 'args' : ['name', 'surname'] },
+#      '__fullNameUpper__' : { 'transform' : 'concatStrings', 
+#                              'args' : [{ 'transform' : 'upperCase', 'args' : ['name'] }, { 'transform' : 'upperCase', 'args' : ['surname'] }] },
+    }
+
+    
+    if request.POST:
+        #TODO: data should be parsed according to format
+        data = json.loads(request.raw_post_data)
+        for d in data:
+            newRecord = mappingManager.mapRecord(d, mapping)
+            handler._insert(database, collection, newRecord)
+            out['results'].append(newRecord)
+    
+    
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
     
