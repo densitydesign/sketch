@@ -11,8 +11,15 @@ import bson.json_util
 
 import decorators
 from mongowrapper import MongoWrapper
-from helpers import createBaseResponseObject
+from helpers import createBaseResponseObject, createResponseObjectWithError
 
+#TODO: as pymongo creates a db or collection if it does not exits,
+# we should prevent this by allowing queries only on existing objects
+# for example using decorators like @existing_database, existing_collection
+
+#TODO: handle read permissions, with decorator
+
+#TODO: probably this view should be renamed to query
 
 def api_call(request, collection, command, database=None):
     """
@@ -41,6 +48,10 @@ def api_call(request, collection, command, database=None):
 
 #this loads an instance of mapper
 from mappermanager import mappingManager
+
+#TODO: probably this view should be renamed to import
+
+#TODO: handle write permissions, with decorator
 
 @decorators.login_required
 @decorators.must_own_collection
