@@ -2,32 +2,16 @@ from django.template import Context, loader
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.views.decorators.csrf import csrf_exempt
-#from django.contrib.auth.decorators import login_required
-import decorators
 
 import datetime
 import settings
-import pymongo
 import json
 import bson
 import bson.json_util
 
+import decorators
 from mongowrapper import MongoWrapper
-
-
-
-def createBaseResponseObject():
-    """
-    Creates a dict used as a request in json responses
-    """
-
-    out = dict()
-    out['status'] = '0'
-    out['results'] = []
-    out['errors'] = []
-
-    return out
-
+from helpers import createBaseResponseObject
 
 
 def api_call(request, collection, command, database=None):
@@ -58,11 +42,9 @@ def api_call(request, collection, command, database=None):
 #this loads an instance of mapper
 from mappermanager import mappingManager
 
-
-#temporarily remove crsf control to test easily with curl
-
 @decorators.login_required
 @decorators.must_own_collection
+#temporarily remove crsf control to test easily with curl
 @csrf_exempt
 def mapper_call(request, collection, database=None):
     """
@@ -75,7 +57,7 @@ def mapper_call(request, collection, database=None):
     mongo = MongoWrapper()
     mongo.connect()
     
-    #mapping should come from url, in form of id
+    #TODO: mapping should come from url, in form of id
     mapping = { '__key__' : 'id', 
       '__upperName__' : { 'transform' : 'upperCase', 'args' : ['name'] },
 #      '__fullName__' : { 'transform' : 'concatStrings', 'args' : ['name', 'surname'] },
@@ -86,6 +68,7 @@ def mapper_call(request, collection, database=None):
     
     if request.POST:
         #TODO: data should be parsed according to format
+        #TODO: handle errors
         data = json.loads(request.raw_post_data)
         for d in data:
             newRecord = mappingManager.mapRecord(d, mapping)
