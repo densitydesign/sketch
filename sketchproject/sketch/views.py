@@ -2,6 +2,8 @@ from django.template import Context, loader
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.views.decorators.csrf import csrf_exempt
+#from django.contrib.auth.decorators import login_required
+import decorators
 
 import datetime
 import settings
@@ -140,7 +142,11 @@ def api_call(request, collection, command, database=None):
 #this loads an instance of mapper
 from mappermanager import mappingManager
 
+
 #temporarily remove crsf control to test easily with curl
+
+@decorators.login_required
+@decorators.must_own_collection
 @csrf_exempt
 def mapper_call(request, collection, database=None):
     """
