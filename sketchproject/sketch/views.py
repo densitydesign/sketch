@@ -19,9 +19,7 @@ from helpers import createBaseResponseObject, createResponseObjectWithError
 
 #TODO: handle read permissions, with decorator
 
-#TODO: probably this view should be renamed to query
-
-def api_call(request, collection, command, database=None):
+def query(request, collection, command, database=None):
     """
     Main view to send commands to handler
     """
@@ -49,15 +47,13 @@ def api_call(request, collection, command, database=None):
 #this loads an instance of mapper
 from mappermanager import mappingManager
 
-#TODO: probably this view should be renamed to import
-
 #TODO: handle write permissions, with decorator
 
 @decorators.login_required
 @decorators.must_own_collection
 #temporarily remove crsf control to test easily with curl
 @csrf_exempt
-def mapper_call(request, collection, database=None):
+def import(request, collection, database=None):
     """
     View used to import data
     """
