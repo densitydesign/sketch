@@ -51,7 +51,11 @@ def query(request, collection, command, database=None):
         out['errors'] = str(e)
         out['status'] = 0
     
-    mongo.connection.close()
+    try:
+        mongo.connection.close()
+    except:
+        pass
+        
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
     
 
