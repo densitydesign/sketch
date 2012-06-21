@@ -13,11 +13,6 @@ import decorators
 from mongowrapper import MongoWrapper
 from helpers import createBaseResponseObject, createResponseObjectWithError
 
-#TODO: as pymongo creates a db or collection if it does not exits,
-# we should prevent this by allowing queries only on existing objects
-# for example using decorators like @existing_database, existing_collection,
-# or maybe using MongoWrapper methods
-
 #TODO: handle read permissions, with decorator
 
 def query(request, collection, command, database=None):
@@ -31,15 +26,27 @@ def query(request, collection, command, database=None):
     mongo = MongoWrapper()
     
     commandMethod = getattr(mongo, command, None)
-    if not commandMethod or command not in mongo.available_commands:
-        raise Exception("Command %s not supported" % command)
-
-    mongo.connect()
     
     try:
+        
+        if not commandMethod or command not in mongo.available_commands:
+            raise Exception("Command %s not supported" % command)
+        
+        mongo.connect()
+    
+        existing_dbs = mongo.connection.database_names()
+        if database not in existing_dbs:
+            raise Exception("Database %s does not exist" % database)
+            
+        database_object = mongo.getDb(database)
+        existing_collections = database_object.collection_names()
+        if collection not in existing_collections:
+            raise Exception("Collection %s does not exist" % collection)
+            
         results = commandMethod(database, collection, request)
         if results:
             out['results'] = results
+    
     except Exception, e:
         out['errors'] = str(e)
         out['status'] = 0
@@ -58,7 +65,7 @@ from mappermanager import mappingManager
 @decorators.must_own_collection
 #temporarily remove crsf control to test easily with curl
 @csrf_exempt
-def import(request, collection, database=None):
+def import_call(request, collection, database=None):
     """
     View used to import data
     """
