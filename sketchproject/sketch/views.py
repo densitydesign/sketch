@@ -36,9 +36,13 @@ def query(request, collection, command, database=None):
 
     mongo.connect()
     
-    results = commandMethod(database, collection, request)
-    if results:
-        out['results'] = results
+    try:
+        results = commandMethod(database, collection, request)
+        if results:
+            out['results'] = results
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
     
     mongo.connection.close()
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
