@@ -64,6 +64,7 @@ if __name__ == '__main__':
     mapper.registerTransform(upperCase)
     mapper.registerTransform(concatStrings)
         
+    #todo: mapping should be able to refer to previous defined keys    
     mapping = { '__key__' : 'id', 
                 '__upperName__' : { 'transform' : 'upperCase', 'args' : ['name'] },
                 '__fullName__' : { 'transform' : 'concatStrings', 'args' : ['name', 'surname'] },
