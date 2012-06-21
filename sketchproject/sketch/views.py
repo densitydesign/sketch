@@ -15,7 +15,8 @@ from helpers import createBaseResponseObject, createResponseObjectWithError
 
 #TODO: as pymongo creates a db or collection if it does not exits,
 # we should prevent this by allowing queries only on existing objects
-# for example using decorators like @existing_database, existing_collection
+# for example using decorators like @existing_database, existing_collection,
+# or maybe using MongoWrapper methods
 
 #TODO: handle read permissions, with decorator
 
