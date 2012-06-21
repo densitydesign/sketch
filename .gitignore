@@ -1,4 +1,4 @@
 *.pyc
 env/*
 *.sqlite
-
+sketchproject/sketchdata/*
