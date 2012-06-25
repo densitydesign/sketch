@@ -26,8 +26,7 @@ class MongoWrapper(object):
     
         db = getattr(self.connection, db_name)
         return db
-        
-        
+                
     def getCollection(self, db_name, collection_name):
     
         db = self.getDb(db_name)
