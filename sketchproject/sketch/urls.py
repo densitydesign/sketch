@@ -13,6 +13,8 @@ urlpatterns = patterns('sketch.views',
     url(r'import/(?P<database>\w+)/(?P<collection>\w+)/$', 'importCall'),
     
     url(r'meta/server/$', 'serverMeta'),
+    
+    url(r'ajaxlogin/$', 'ajaxLogin')
 
     
     

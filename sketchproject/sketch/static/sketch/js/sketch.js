@@ -12,6 +12,15 @@ sketchjs.Sketch = function(url, dabase){
 };
 
 //#TODO: add login helpers, maybe bound to a form
+/* meta function */
+sketchjs.Sketch.prototype.login = function(username, pwd){
+
+    console.log("login called");
+    
+}
+
+
+
 
 
 /* meta function */
