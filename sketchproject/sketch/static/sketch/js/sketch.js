@@ -37,7 +37,7 @@ sketchjs.Sketch.prototype.meta = function(){
 
     console.log("meta called");
     
-}
+};
 
 
 
@@ -46,7 +46,7 @@ sketchjs.Sketch.prototype.query = function(collection, command){
 
     console.log("query called");
     
-}
+};
 
 //#TODO: add an insert function
 
