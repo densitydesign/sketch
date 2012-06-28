@@ -11,13 +11,22 @@ sketchjs.Sketch = function(url, dabase){
 
 };
 
-//#TODO: add login helpers, maybe bound to a form
-/* meta function */
-sketchjs.Sketch.prototype.login = function(username, pwd){
+
+/* login function */
+sketchjs.Sketch.prototype.login = function(username, pwd, successCallback){
+
+    var loginUrl = this.url + "/sketch/ajaxlogin";
+    var data = {'username' : username, 'password' : password };
 
     console.log("login called");
-    
-}
+    $.ajax({
+        type: 'POST',
+        url: loginUrl,
+        data: data,
+        success: successCallback,
+        dataType: 'json'
+    });   
+};
 
 
 
