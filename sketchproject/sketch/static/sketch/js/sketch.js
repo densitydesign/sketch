@@ -2,7 +2,7 @@ var sketchjs = sketchjs || {};
 
 
 //TODO: use a more robust pattern for object creation
-sketchjs.Sketch = function(url, dabase){
+sketchjs.Sketch = function(url, database){
 
     this.url = url;
     this.database = database;
@@ -14,10 +14,11 @@ sketchjs.Sketch = function(url, dabase){
 
 /* login function */
 sketchjs.Sketch.prototype.login = function(username, pwd, successCallback){
-
-    var loginUrl = this.url + "/sketch/ajaxlogin";
-    var data = {'username' : username, 'password' : password };
-
+    console.log(username, pwd);
+    var loginUrl = "/sketch/ajaxlogin/";
+    
+    var data = {username : username, password : pwd };
+    console.log(loginUrl);
     console.log("login called");
     $.ajax({
         type: 'POST',
