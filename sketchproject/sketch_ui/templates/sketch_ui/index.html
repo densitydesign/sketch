@@ -12,6 +12,7 @@
   <!--
   <link rel="stylesheet" href="css/styles.css?v=1.0">
   -->
+  <link rel="stylesheet" href="/static/sketch_ui/css/styles.css">
   <!-- stylesheets end -->
   
   <!--[if lt IE 9]>
@@ -23,7 +24,43 @@
 <body>
   <h1>Sketch user interface :)</h1>
   <!-- scripts here -->
+  
+  <form>
+  <table>
+  <tr><td>Username</td><td><input id="username"/></td></tr>
+  <tr><td>Password</td><td><input id="password"/></td></tr>
+  </table>
+  <button id="loginbutton">Login</button>
+  </form>
+  <div id="console-div"></div>
+  
+  <script src="/static/sketch/js/jquery.js"></script>
   <script src="/static/sketch/js/sketch.js"></script>
+
+  <!-- #TODO: move this script to a separate file -->
+  <script>
+        
+      var sketch = new sketchjs.Sketch("http://localhost:8000", 'sketchdb');   
+  
+      $("#loginbutton").click(function(){
+          var username = $("#username").val();
+          var password = $("#password").val();
+
+          sketch.login(username, password, function(data){
+              console.log("login response:", data)
+              var message = data.message;
+              $("#console-div").append(message + "<br/>");
+          });
+
+          return false;
+          
+      });
+      
+
+      
+  
+  </script>
+  
   <!-- end scripts -->
 </body>
 </html>
