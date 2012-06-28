@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     
     url(r'^sketch/', include('sketch.urls')),
+    url(r'^sketch_ui/', include('sketch_ui.urls')),
     
 )
 
