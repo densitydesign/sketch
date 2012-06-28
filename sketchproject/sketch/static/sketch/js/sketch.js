@@ -14,12 +14,12 @@ sketchjs.Sketch = function(url, database){
 
 /* login function */
 sketchjs.Sketch.prototype.login = function(username, pwd, successCallback){
-    console.log(username, pwd);
+
+    console.log("login called");  
+
     var loginUrl = "/sketch/ajaxlogin/";
-    
     var data = {username : username, password : pwd };
-    console.log(loginUrl);
-    console.log("login called");
+
     $.ajax({
         type: 'POST',
         url: loginUrl,
