@@ -65,6 +65,37 @@ def serverMeta(request):
         pass
     
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
+    
+    
+#TODO: probably we want another type of response here
+#TODO: wrap metadata calls in a single view (for example collection names)
+def dbMeta(request, database):
+
+    mongo = MongoWrapper()
+    
+    try:
+        out = createBaseResponseObject()
+        mongo.connect()
+
+        existing_dbs = mongo.connection.database_names()
+        if database not in existing_dbs:
+            raise Exception("Database %s does not exist" % database) 
+        
+        database_object = mongo.getDb(database)
+        existing_collections = database_object.collection_names()
+
+        out['results'] = existing_collections
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+    
+    try:
+        mongo.connection.close()
+    except:
+        pass
+    
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
 
@@ -85,7 +116,7 @@ def query(request, collection, command, database=None):
     try:
         
         if not commandMethod or command not in mongo.available_commands:
-            raise Exception("Command %s not supported" % command)
+            raise Exception("Command %s not supported. Available commands are: %s" % (command, ", ".join(mongo.available_commands)))
         
         mongo.connect()
     

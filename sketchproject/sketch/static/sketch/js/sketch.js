@@ -5,8 +5,12 @@ var sketchjs = sketchjs || {};
 sketchjs.Sketch = function(url, database){
 
     this.url = url;
-    this.database = database;
-    
+    if(database){
+        this.database = database;
+    } else {
+        this.database = 'sketchdb';
+    }
+
     return this;
 
 };
@@ -14,8 +18,6 @@ sketchjs.Sketch = function(url, database){
 
 /* login function */
 sketchjs.Sketch.prototype.login = function(username, pwd, successCallback){
-
-    console.log("login called");  
 
     var loginUrl = this.url + "/sketch/ajaxlogin/";
     var data = {username : username, password : pwd };
@@ -34,18 +36,50 @@ sketchjs.Sketch.prototype.login = function(username, pwd, successCallback){
 
 
 /* meta function */
-sketchjs.Sketch.prototype.meta = function(){
+sketchjs.Sketch.prototype.getServerMeta = function(successCallback){
 
-    console.log("meta called");
+    var url = this.url + "/sketch/meta/server/";
+    
+    $.ajax({
+        type: 'GET',
+        url: url,
+        success: successCallback,
+        dataType: 'json'
+    });   
+    
+};
+
+/* meta function */
+sketchjs.Sketch.prototype.getDbMeta = function(successCallback){
+
+    var url = this.url + "/sketch/meta/db/" + this.database + "/";
+    
+    $.ajax({
+        type: 'GET',
+        url: url,
+        success: successCallback,
+        dataType: 'json'
+    });   
     
 };
 
 
 
-/* query function */
-sketchjs.Sketch.prototype.query = function(collection, command){
 
-    console.log("query called");
+/* query function */
+sketchjs.Sketch.prototype.query = function(collection, command, data, successCallback){
+
+    var url = this.url + "/sketch/query/" + this.database + "/" + collection + "/" + command + "/";
+    console.log("query", url);
+    
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: data,
+        success: successCallback,
+        dataType: 'json'
+    });
+    
     
 };
 
