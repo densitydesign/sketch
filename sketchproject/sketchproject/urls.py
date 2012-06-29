@@ -16,8 +16,10 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     
+    url (r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'sketch_ui/login.html'}, name="login"),
+
     url(r'^sketch/', include('sketch.urls')),
-    url(r'^sketch_ui/', include('sketch_ui.urls')),
+    url(r'^', include('sketch_ui.urls')),
     
 )
 

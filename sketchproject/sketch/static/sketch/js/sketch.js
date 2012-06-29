@@ -17,7 +17,7 @@ sketchjs.Sketch.prototype.login = function(username, pwd, successCallback){
 
     console.log("login called");  
 
-    var loginUrl = "/sketch/ajaxlogin/";
+    var loginUrl = this.url + "/sketch/ajaxlogin/";
     var data = {username : username, password : pwd };
 
     $.ajax({
