@@ -2,6 +2,7 @@ from django.template import Context, loader
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate
 
 import datetime
 import settings
@@ -12,6 +13,60 @@ import bson.json_util
 import decorators
 from mongowrapper import MongoWrapper
 from helpers import createBaseResponseObject, createResponseObjectWithError
+
+
+
+#login view
+@csrf_exempt
+def ajaxLogin(request):
+
+    message = "No data"
+
+    if request.POST and 'username' in request.POST and 'password' in request.POST:
+        username = request.POST['username']
+        password = request.POST['password']
+        
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                message = "You provided a correct username and password!"
+            else:
+                message = "Your account has been disabled!"
+        else:
+            message = "Your username and password were incorrect."
+
+    return HttpResponse(json.dumps({'message' : message}))
+
+
+
+
+
+
+
+#TODO: probably we want another type of response here
+#TODO: wrap metadata calls in a single view (for example collection names)
+def serverMeta(request):
+
+    mongo = MongoWrapper()
+    
+    try:
+        out = createBaseResponseObject()
+        mongo.connect()
+        existing_dbs = mongo.connection.database_names()
+        out['results'] = existing_dbs
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+    
+    try:
+        mongo.connection.close()
+    except:
+        pass
+    
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
 
 #TODO: handle read permissions, with decorator
 
@@ -69,7 +124,7 @@ from mappermanager import mappingManager
 @decorators.must_own_collection
 #temporarily remove crsf control to test easily with curl
 @csrf_exempt
-def import_call(request, collection, database=None):
+def importCall(request, collection, database=None):
     """
     View used to import data
     """

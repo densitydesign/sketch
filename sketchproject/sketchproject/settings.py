@@ -127,8 +127,9 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
 
-    #our app    
+    #our apps
     'sketch',
+    'sketch_ui',
     
 )
 
