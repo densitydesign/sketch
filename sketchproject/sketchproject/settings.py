@@ -127,10 +127,24 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
 
-    #our app    
+    #our apps
     'sketch',
+    'sketch_ui',
     
 )
+
+
+# Users and authentication stuff
+
+from django.core.urlresolvers import reverse_lazy
+
+LOGIN_REDIRECT_URL = reverse_lazy('sketch_ui_index')
+
+
+
+
+
+
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
