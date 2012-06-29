@@ -1,6 +1,107 @@
 {% extends "sketch_ui/base.html" %}
 
 {% block content %}
-  <h1>Sketch user interface :)</h1>
-  <p>Seems like you're logged in </p>
+
+    <h1>Sketch user interface :)</h1>
+    <p>Seems like you're logged in as {{ user }}</p>
+    <form method="get" action="/logout/">
+        <input type="submit" name="logout-button" value="Log me out"/>
+    </form>
+    <hr/>
+    
+    <button id="test-meta-server">Test server meta info</button>
+    <hr/>
+    
+    <button id="test-meta-db">Test db meta info</button>
+    <hr/>
+    
+    <button id="test-query">Test query</button><br/>
+    <label>Collection</label><input id="query-collection"/><br/>
+    <label>Command</label><input id="query-command"/><br/>
+    <label>Query</label><textarea id="query-query"></textarea><br/>
+    <hr/>    
+    
+    <div id="console-div"></div>
+
+
+{% endblock %}
+
+
+{% block js_body %}
+
+<script>
+
+    var sketch = new sketchjs.Sketch("http://localhost:8000", 'sketchdb');  
+    
+    //Helper function to log errors and results to our console div
+    
+    function logErrorsAndResults(response){
+        var errors = response.errors;
+        var results = response.results;
+        if(results && results.length){
+            $("#console-div").append("results:<br/>");
+            var l = results.length;
+            for(var i=0;i<l;i++){
+                result = results[i];
+                $("#console-div").append(JSON.stringify(result, null, 1) + "<br/>");
+            }
+        }
+        
+        $("#console-div").append("errors:" + errors + "<br/>");
+
+    }
+    
+    
+
+    $("#test-meta-server").click(function(){
+
+        sketch.getServerMeta(function(response){
+        
+            $("#console-div").append("getServerMeta called<br/>");
+            logErrorsAndResults(response);
+        
+        });
+    
+    });
+    
+    
+    $("#test-meta-db").click(function(){
+
+        sketch.getDbMeta(function(response){
+        
+            $("#console-div").append("getDbMeta called<br/>");
+            logErrorsAndResults(response)
+        
+        });
+    
+    });
+
+    
+    
+    $("#test-query").click(function(){
+    
+        var collection = $("#query-collection").val()
+        var command = $("#query-command").val()
+        var query = $("#query-query").val();
+        
+        console.log("query:", collection, command, query);
+        
+        //todo: check args...
+        var data = query;
+
+        sketch.query(collection, command, data, function(response){
+            console.log("response", response);
+            $("#console-div").append("query called<br/>");
+            logErrorsAndResults(response)
+        
+        });
+
+    
+    });
+
+
+</script>
+
+
+
 {% endblock %}

@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     
     url (r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'sketch_ui/login.html'}, name="login"),
+    url (r'^logout/$', 'django.contrib.auth.views.logout', {'next_page' : '/login/'}, name="logout"),
 
     url(r'^sketch/', include('sketch.urls')),
     url(r'^', include('sketch_ui.urls')),
