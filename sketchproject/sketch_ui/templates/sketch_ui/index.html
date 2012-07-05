@@ -10,16 +10,29 @@
     <hr/>
     
     <button id="test-meta-server">Test server meta info</button>
-    <hr/>
-    
     <button id="test-meta-db">Test db meta info</button>
+    <button id="test-meta-parsers">Test parsers meta info</button>
     <hr/>
     
     <button id="test-query">Test query</button><br/>
     <label>Collection</label><input id="query-collection"/><br/>
     <label>Command</label><input id="query-command"/><br/>
-    <label>Query</label><textarea id="query-query"></textarea><br/>
+    <label>Query</label><textarea  style="width:500px;height:100px;"  id="query-query"></textarea><br/>
     <hr/>    
+    
+    <button id="test-import">Test import</button><br/>
+    <label>Collection</label><input id="import-collection"/><br/>
+    <!-- #todo: radio or select -->
+    <label>Format</label>
+    <select id="import-format">
+        <option value="jsonlist">jsonlist</option>
+        <option value="jsontext">jsontext</option>
+    </select>
+    <br/>
+    <label>Data</label><textarea style="width:500px;height:200px;" id="import-data"></textarea><br/>
+    <hr/>    
+
+    
     
     <div id="console-div"></div>
 
@@ -75,6 +88,18 @@
         });
     
     });
+    
+    $("#test-meta-parsers").click(function(){
+
+        sketch.getParsersMeta(function(response){
+        
+            $("#console-div").append("getParsersMeta called<br/>");
+            logErrorsAndResults(response);
+        
+        });
+    
+    });
+    
 
     
     
@@ -92,6 +117,26 @@
         sketch.query(collection, command, data, function(response){
             console.log("response", response);
             $("#console-div").append("query called<br/>");
+            logErrorsAndResults(response)
+        
+        });
+    
+    });
+    
+    
+    $("#test-import").click(function(){
+    
+        var collection = $("#import-collection").val()
+        var format = $("#import-format").val()
+        var data = $("#import-data").val();
+        
+        console.log("import:", collection, format, data);
+        
+        //todo: check args...
+
+        sketch.import(collection, format, data, function(response){
+            console.log("response", response);
+            $("#console-div").append("import called<br/>");
             logErrorsAndResults(response)
         
         });
