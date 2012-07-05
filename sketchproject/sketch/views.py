@@ -13,6 +13,7 @@ import bson.json_util
 import decorators
 from mongowrapper import MongoWrapper
 from helpers import createBaseResponseObject, createResponseObjectWithError
+import recordparser
 
 
 
@@ -39,10 +40,6 @@ def ajaxLogin(request):
 
 
 
-
-
-
-
 #TODO: probably we want another type of response here
 #TODO: wrap metadata calls in a single view (for example collection names)
 def serverMeta(request):
@@ -65,7 +62,10 @@ def serverMeta(request):
         pass
     
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
-    
+
+
+
+
     
 #TODO: probably we want another type of response here
 #TODO: wrap metadata calls in a single view (for example collection names)
@@ -96,6 +96,26 @@ def dbMeta(request, database):
         pass
     
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
+
+
+#TODO: probably we want another type of response here
+#TODO: wrap metadata calls in a single view (for example collection names)
+def parsersMeta(request):
+    
+    out = createBaseResponseObject()
+    try:
+        out['results'] = recordparser.ALLOWED_PARSERS.keys()
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
+
 
 
 
@@ -157,8 +177,10 @@ from mappermanager import mappingManager
 @csrf_exempt
 def importCall(request, collection, database=None):
     """
-    View used to import data
+    View used to import data.
     """
+
+    #TODO: separate data collection and processing and write a view that handles FILES
     
     out = createBaseResponseObject()
     
@@ -167,8 +189,8 @@ def importCall(request, collection, database=None):
     mongo.connect()
     
     #TODO: mapping should come from url, in form of id
-    mapping = { '__key__' : 'id', 
-      '__upperName__' : { 'transform' : 'upperCase', 'args' : ['name'] },
+    mapping = { '__key__' : 'id_str', 
+#      '__upperName__' : { 'transform' : 'upperCase', 'args' : ['name'] },
 #      '__fullName__' : { 'transform' : 'concatStrings', 'args' : ['name', 'surname'] },
 #      '__fullNameUpper__' : { 'transform' : 'concatStrings', 
 #                              'args' : [{ 'transform' : 'upperCase', 'args' : ['name'] }, { 'transform' : 'upperCase', 'args' : ['surname'] }] },
@@ -176,13 +198,26 @@ def importCall(request, collection, database=None):
 
     
     if request.POST:
-        #TODO: data should be parsed according to format
-        #TODO: handle errors
-        data = json.loads(request.raw_post_data)
-        for d in data:
-            newRecord = mappingManager.mapRecord(d, mapping)
-            mongo._insert(database, collection, newRecord)
-            out['results'].append(newRecord)
+        if 'data' in request.POST and 'format' in request.POST:
+            format = request.POST['format'].lower()
+            data = request.POST['data']
+            
+        try:
+            parser = recordparser.parserFactory(format, data)
+            for d in parser.objects():
+                newRecord = mappingManager.mapRecord(d, mapping)
+                mongo._insert(database, collection, newRecord)
+                out['results'].append(newRecord)
+        
+        
+        except Exception, e:
+            out['errors'] = str(e)
+            out['status'] = 0
+            
+
+
+        
+        
     
     mongo.connection.close()
     return HttpResponse(json.dumps(out, default=bson.json_util.default))

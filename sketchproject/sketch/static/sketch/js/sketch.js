@@ -64,6 +64,20 @@ sketchjs.Sketch.prototype.getDbMeta = function(successCallback){
 };
 
 
+/* meta function */
+sketchjs.Sketch.prototype.getParsersMeta = function(successCallback){
+
+    var url = this.url + "/sketch/meta/parsers/";
+    
+    $.ajax({
+        type: 'GET',
+        url: url,
+        success: successCallback,
+        dataType: 'json'
+    });   
+    
+};
+
 
 
 /* query function */
@@ -83,7 +97,29 @@ sketchjs.Sketch.prototype.query = function(collection, command, data, successCal
     
 };
 
-//#TODO: add an insert function
+
+/* import function */
+//TODO: add mapping
+sketchjs.Sketch.prototype.import = function(collection, format, data, successCallback){
+
+    var url = this.url + "/sketch/import/" + this.database + "/" + collection + "/";
+    console.log("query", url);
+    postData = {data : data, format : format};
+    
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: postData,
+        success: successCallback,
+        dataType: 'json'
+    });
+    
+    
+};
+
+
+
+
 
 
 
