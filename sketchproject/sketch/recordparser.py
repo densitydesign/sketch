@@ -4,7 +4,7 @@ import StringIO
 
 
 class BaseRecordParser(object):
-    def __init__(self, data)
+    def __init__(self, data):
         self.data = data
         
         
@@ -38,7 +38,6 @@ class JSONTextFileParser(BaseRecordParser):
 
 
 #TODO: move allowed parsers to settings
-#TODO: expose available parsers list to rest api
 ALLOWED_PARSERS = {
     #'csv' : 'CSVRecordParser', 
     'jsonlist' : 'JSONListParser',
@@ -50,9 +49,9 @@ def parserFactory(parserName, data):
 
     currentModule = sys.modules[__name__]
     try:
-        constructorName = ALLOWED_PARSERS[formatterName]
+        constructorName = ALLOWED_PARSERS[parserName]
     except:
-        raise ValueError('parser %S is not available. Available parsers are: %s' % (parserName, str(ALLOWED_PARSERS.keys())))
+        raise ValueError('parser %s is not available. Available parsers are: %s' % (parserName, str(ALLOWED_PARSERS.keys())))
     
     try:
         constructor = getattr(currentModule, constructorName) 
