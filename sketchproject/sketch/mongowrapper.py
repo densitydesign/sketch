@@ -73,14 +73,13 @@ class MongoWrapper(object):
     def count(self, db_name, collection_name, request): 
         
         queryDict = request.GET.get('query') or request.POST.get('query')
-        queryDict = self.parseJsonQueryDict(queryDict)
+        queryDict = self.parseJsonDict(queryDict)
         
         collection = self.getCollection(db_name, collection_name)
-        
         if queryDict:
-            return collection.find(queryDict).count()
+            return [collection.find(queryDict).count()]
 
-        return collection.count()
+        return [collection.count()]
         
         
     def parseJsonDict(self, jsonString):
