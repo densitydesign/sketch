@@ -109,10 +109,12 @@
         var command = $("#query-command").val()
         var query = $("#query-query").val();
         
-        console.log("query:", collection, command, query);
+
         
         //todo: check args...
-        var data = query;
+        var data = {query: query};
+        
+        console.log("query:", collection, command, data);
 
         sketch.query(collection, command, data, function(response){
             console.log("response", response);
