@@ -184,6 +184,9 @@ def importCall(request, collection, database=None):
     
     out = createBaseResponseObject()
     
+    out['error_records'] = { 'parser' : [], 'mapper' : [] }
+    out['ok_records_number'] = 0
+    
     database = database or settings.MONGO_SERVER_DEFAULT_DB
     mongo = MongoWrapper()
     mongo.connect()
@@ -198,6 +201,12 @@ def importCall(request, collection, database=None):
 
     
     if request.POST:
+    
+        record_errors_number = 0
+        ok_records = []
+        #TODO: PARAMETRIZE THIS, maybe in settings
+        MAX_ERROR_RECORDS = 10000
+    
         if 'data' in request.POST and 'format' in request.POST:
             format = request.POST['format'].lower()
             data = request.POST['data']
@@ -205,20 +214,37 @@ def importCall(request, collection, database=None):
         try:
             parser = recordparser.parserFactory(format, data)
             for d in parser.objects():
-                newRecord = mappingManager.mapRecord(d, mapping)
-                mongo._insert(database, collection, newRecord)
-                out['results'].append(newRecord)
-        
-        
+                if d is recordparser.ParserError:
+                    out['error_records']['parser'].append(d.exception_message + ":" +d.raw_data)
+                    continue
+                
+                try:
+                    newRecord = mappingManager.mapRecord(d, mapping)
+                    ok_records.append(newRecord)
+                
+                except:
+                    out['error_records']['mapper'].append(d)
+                
+                if len(out['error_records']['mapper']) + len(out['error_records']['parser']) > MAX_ERROR_RECORDS:
+                    break
+                    
+                
+        if 'commit' in request.POST and request.POST['commit']:
+            for record in ok_records:
+                mongo_id = mongo._insert(database, collection, record)
+                out['results'].append(mongo_id)
+                        
         except Exception, e:
             out['errors'] = str(e)
             out['status'] = 0
+             
+        out['ok_records_number'] = len(ok_records)
             
-
-
+    try:
+        mongo.connection.close()
+    except:
+        pass
         
         
-    
-    mongo.connection.close()
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
     

@@ -3,7 +3,16 @@ import json
 import StringIO
 
 
+class ParserError(object):
+
+    def __init__(self, raw_data, exception_message):
+        self.raw_data = raw_data
+        #expecting a string, forcing conversion anyway
+        self.exception_message = str(exception_message)
+
+
 class BaseRecordParser(object):
+
     def __init__(self, data):
         self.data = data
         
@@ -22,7 +31,7 @@ class JSONListParser(BaseRecordParser):
     
     def objects(self):
         items = json.loads(self.data)
-        if type(jsondata) is list:
+        if type(items) is list:
             for item in items:
                 yield item
         else:
@@ -30,11 +39,16 @@ class JSONListParser(BaseRecordParser):
             
 
 class JSONTextFileParser(BaseRecordParser):    
+
     def objects(self):
         buffer = StringIO.StringIO(self.data)
         for line in buffer.readlines():
-            item = json.loads(line)
-            yield item
+            try:
+                item = json.loads(line)
+                yield item
+
+            except Exception, e:
+                yield ParserError(line, str(e))
 
 
 #TODO: move allowed parsers to settings
