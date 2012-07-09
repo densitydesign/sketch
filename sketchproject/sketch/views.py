@@ -13,6 +13,7 @@ import bson.json_util
 import decorators
 from mongowrapper import MongoWrapper
 from helpers import createBaseResponseObject, createResponseObjectWithError
+from helpers import getQueryDict, getOffset, getLimit
 import recordparser
 
 
@@ -163,6 +164,71 @@ def query(request, collection, command, database=None):
         pass
         
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
+
+
+#TODO: handle read permissions, with decorator
+
+def objects(request, collection, database=None):
+    """
+    Main view to send commands to handler
+    """
+    out = createBaseResponseObject()
+
+    database = database or settings.MONGO_SERVER_DEFAULT_DB
+    
+    mongo = MongoWrapper()
+    
+    try:
+        
+        mongo.connect()
+    
+        existing_dbs = mongo.connection.database_names()
+        if database not in existing_dbs:
+            raise Exception("Database %s does not exist" % database)
+            
+        database_object = mongo.getDb(database)
+        existing_collections = database_object.collection_names()
+        if collection not in existing_collections:
+            raise Exception("Collection %s does not exist" % collection)
+            
+        query_dict = getQueryDict(request)
+        offset = getOffset(request)
+        limit = getLimit(request)
+        
+        query_result = mongo.objects(database, collection, query_dict=query_dict, offset=offset, limit=limit)
+        records = query_result['records']
+        has_more = query_result['has_more']
+        out['results'] = records
+        out['has_more'] = has_more
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+    
+    try:
+        mongo.connection.close()
+    except:
+        pass
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 
 

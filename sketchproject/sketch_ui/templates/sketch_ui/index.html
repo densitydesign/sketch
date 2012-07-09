@@ -20,6 +20,11 @@
     <label>Query</label><textarea  style="width:500px;height:100px;"  id="query-query"></textarea><br/>
     <hr/>    
     
+    <button id="test-objects">Test objects</button><br/>
+    <label>Collection</label><input id="objects-collection"/><br/>
+    <label>Query</label><textarea  style="width:500px;height:100px;"  id="objects-query"></textarea><br/>
+    <hr/>    
+    
     <button id="test-import">Test import</button><br/>
     <label>Collection</label><input id="import-collection"/><br/>
     <!-- #todo: radio or select -->
@@ -126,6 +131,30 @@
         });
     
     });
+    
+    
+    $("#test-objects").click(function(){
+    
+        var collection = $("#objects-collection").val()
+        var query = $("#objects-query").val();
+        
+
+        
+        //todo: check args...
+        var data = {query: query};
+        
+        console.log("objects:", collection, data);
+
+        sketch.objects(collection, data, function(response){
+            console.log("response", response);
+            $("#console-div").append("query called<br/>");
+            logErrorsAndResults(response)
+        
+        });
+    
+    });
+
+    
     
     
     $("#test-import").click(function(){

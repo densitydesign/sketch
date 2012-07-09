@@ -56,6 +56,27 @@ class MongoWrapper(object):
         return collection.find_one(queryDict)
         
         
+    
+    def objects(self, db_name, collection_name, query_dict={}, offset=0, limit=100):
+        collection = self.getCollection(db_name, collection_name)
+        cursor = collection.find(query_dict)
+
+        records = []
+        counted = 0
+        has_more = False
+        
+        for r in cursor:
+            if counted < limit:
+                records.append(r)
+                counted += 1
+            else:
+                has_more = True
+                break
+        
+        out = {'records' : records, 'has_more' : has_more}
+        return out
+    
+    
     def find(self, db_name, collection_name, request): 
         
         queryDict = request.GET.get('query') or request.POST.get('query')
