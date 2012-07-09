@@ -215,7 +215,7 @@ def importCall(request, collection, database=None):
             parser = recordparser.parserFactory(format, data)
             for d in parser.objects():
                 if d is recordparser.ParserError:
-                    out['error_records']['parser'].append(d.exception_message + ":" +d.raw_data)
+                    out['error_records']['parser'].append(str(d.exception_message) + ":" +d.raw_data)
                     continue
                 
                 try:
@@ -229,10 +229,16 @@ def importCall(request, collection, database=None):
                     break
                     
                 
-        if 'commit' in request.POST and request.POST['commit']:
-            for record in ok_records:
-                mongo_id = mongo._insert(database, collection, record)
-                out['results'].append(mongo_id)
+            if 'commit' in request.POST and request.POST['commit']:
+                try:
+                    commit = int(request.POST['commit'])
+                except:
+                    commit = 0
+                    
+                if commit:
+                    for record in ok_records:
+                        mongo_id = mongo._insert(database, collection, record)
+                        out['results'].append(mongo_id)
                         
         except Exception, e:
             out['errors'] = str(e)

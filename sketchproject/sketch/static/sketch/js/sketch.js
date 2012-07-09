@@ -100,11 +100,15 @@ sketchjs.Sketch.prototype.query = function(collection, command, data, successCal
 
 /* import function */
 //TODO: add mapping
-sketchjs.Sketch.prototype.import = function(collection, format, data, successCallback){
+sketchjs.Sketch.prototype.import = function(collection, format, data, commit, successCallback){
 
     var url = this.url + "/sketch/import/" + this.database + "/" + collection + "/";
     console.log("query", url);
-    postData = {data : data, format : format};
+    var commitInteger = 0;
+    if(Boolean(commit)){
+        commitInteger = 1;
+    } 
+    postData = {data : data, format : format, commit : commitInteger };
     
     $.ajax({
         type: 'POST',
@@ -116,10 +120,6 @@ sketchjs.Sketch.prototype.import = function(collection, format, data, successCal
     
     
 };
-
-
-
-
 
 
 

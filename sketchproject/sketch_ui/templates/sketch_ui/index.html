@@ -30,6 +30,8 @@
     </select>
     <br/>
     <label>Data</label><textarea style="width:500px;height:200px;" id="import-data"></textarea><br/>
+    <br>
+    <label>Commit?</label><input type="checkbox" id="import-commit"/>
     <hr/>    
 
     
@@ -131,12 +133,14 @@
         var collection = $("#import-collection").val()
         var format = $("#import-format").val()
         var data = $("#import-data").val();
+        var commit = $("#import-commit").attr('checked');
+        commit = Boolean(commit);
         
-        console.log("import:", collection, format, data);
+        console.log("import:", collection, format, data, commit);
         
         //todo: check args...
 
-        sketch.import(collection, format, data, function(response){
+        sketch.import(collection, format, data, commit, function(response){
             console.log("response", response);
             $("#console-div").append("import called<br/>");
             logErrorsAndResults(response)
