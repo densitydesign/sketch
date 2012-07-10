@@ -8,6 +8,8 @@ urlpatterns = patterns('sketch.views',
     url(r'query/(?P<collection>\w+)/(?P<command>\w+)/$', 'query'),
     url(r'query/(?P<database>\w+)/(?P<collection>\w+)/(?P<command>\w+)/$', 'query'),
     
+    url(r'objects/(?P<collection>\w+)/$', 'objects'),
+    url(r'objects/(?P<database>\w+)/(?P<collection>\w+)/$', 'objects'),
     
     url(r'import/(?P<collection>\w+)/$', 'importCall'),
     url(r'import/(?P<database>\w+)/(?P<collection>\w+)/$', 'importCall'),

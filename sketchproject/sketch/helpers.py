@@ -1,3 +1,6 @@
+import json
+import settings
+
 def createBaseResponseObject():
     """
     Creates a dict used as a request in json responses.
@@ -23,3 +26,33 @@ def createResponseObjectWithError(error):
     out['errors'] = [error]
 
     return out
+    
+    
+def getQueryDict(request, var_name='query'):
+    #TODO: handle a list of dicts        
+    queryDict = request.GET.get(var_name) or request.POST.get(var_name)
+    try:
+        obj = json.loads(jsonString)
+        return dict(obj)
+    except:
+        return {}    
+
+
+def getLimit(request, var_name='limit'):
+    #TODO: handle a list of dicts        
+    limit = request.GET.get(var_name) or request.POST.get(var_name)
+    try:
+        obj = int(limit)
+        return max(obj, settings.DEFAULT_QUERY_LIMIT)
+    except:
+        return settings.DEFAULT_QUERY_LIMIT    
+        
+
+def getOffset(request, var_name='offset'):
+    #TODO: handle a list of dicts        
+    offset = request.GET.get(var_name) or request.POST.get(var_name)
+    try:
+        obj = int(limit)
+        return obj
+    except:
+        return 0

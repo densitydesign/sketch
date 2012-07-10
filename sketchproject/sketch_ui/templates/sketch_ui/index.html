@@ -20,6 +20,11 @@
     <label>Query</label><textarea  style="width:500px;height:100px;"  id="query-query"></textarea><br/>
     <hr/>    
     
+    <button id="test-objects">Test objects</button><br/>
+    <label>Collection</label><input id="objects-collection"/><br/>
+    <label>Query</label><textarea  style="width:500px;height:100px;"  id="objects-query"></textarea><br/>
+    <hr/>    
+    
     <button id="test-import">Test import</button><br/>
     <label>Collection</label><input id="import-collection"/><br/>
     <!-- #todo: radio or select -->
@@ -30,6 +35,8 @@
     </select>
     <br/>
     <label>Data</label><textarea style="width:500px;height:200px;" id="import-data"></textarea><br/>
+    <br>
+    <label>Commit?</label><input type="checkbox" id="import-commit"/>
     <hr/>    
 
     
@@ -126,17 +133,43 @@
     });
     
     
+    $("#test-objects").click(function(){
+    
+        var collection = $("#objects-collection").val()
+        var query = $("#objects-query").val();
+        
+
+        
+        //todo: check args...
+        var data = {query: query};
+        
+        console.log("objects:", collection, data);
+
+        sketch.objects(collection, data, function(response){
+            console.log("response", response);
+            $("#console-div").append("query called<br/>");
+            logErrorsAndResults(response)
+        
+        });
+    
+    });
+
+    
+    
+    
     $("#test-import").click(function(){
     
         var collection = $("#import-collection").val()
         var format = $("#import-format").val()
         var data = $("#import-data").val();
+        var commit = $("#import-commit").attr('checked');
+        commit = Boolean(commit);
         
-        console.log("import:", collection, format, data);
+        console.log("import:", collection, format, data, commit);
         
         //todo: check args...
 
-        sketch.import(collection, format, data, function(response){
+        sketch.import(collection, format, data, commit, function(response){
             console.log("response", response);
             $("#console-div").append("import called<br/>");
             logErrorsAndResults(response)
