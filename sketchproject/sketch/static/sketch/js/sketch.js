@@ -98,13 +98,37 @@ sketchjs.Sketch.prototype.query = function(collection, command, data, successCal
 };
 
 
+/* objects function */
+sketchjs.Sketch.prototype.objects = function(collection, data, successCallback){
+
+    var url = this.url + "/sketch/objects/" + this.database + "/" + collection + "/";
+    console.log("objects", url);
+    //#TODO: this should be a GET
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: data,
+        success: successCallback,
+        dataType: 'json'
+    });
+    
+    
+};
+
+
+
+
 /* import function */
 //TODO: add mapping
-sketchjs.Sketch.prototype.import = function(collection, format, data, successCallback){
+sketchjs.Sketch.prototype.import = function(collection, format, data, commit, successCallback){
 
     var url = this.url + "/sketch/import/" + this.database + "/" + collection + "/";
     console.log("query", url);
-    postData = {data : data, format : format};
+    var commitInteger = 0;
+    if(Boolean(commit)){
+        commitInteger = 1;
+    } 
+    postData = {data : data, format : format, commit : commitInteger };
     
     $.ajax({
         type: 'POST',
@@ -116,10 +140,6 @@ sketchjs.Sketch.prototype.import = function(collection, format, data, successCal
     
     
 };
-
-
-
-
 
 
 
