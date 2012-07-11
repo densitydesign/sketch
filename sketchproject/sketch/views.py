@@ -13,7 +13,7 @@ import bson.json_util
 import decorators
 from mongowrapper import MongoWrapper
 from helpers import createBaseResponseObject, createResponseObjectWithError
-from helpers import getQueryDict, getOffset, getLimit
+from helpers import getQueryDict, getOffset, getLimit, getFormatter
 import recordparser
 
 
@@ -196,8 +196,10 @@ def objects(request, collection, database=None):
         query_dict = getQueryDict(request)
         offset = getOffset(request)
         limit = getLimit(request)
+        formatter = getFormatter(request)
         
-        query_result = mongo.objects(database, collection, query_dict=query_dict, offset=offset, limit=limit)
+        query_result = mongo.objects(database, collection, query_dict=query_dict, offset=offset, limit=limit, 
+                                     formatter=formatter)
         records = query_result['records']
         has_more = query_result['has_more']
         out['results'] = records
