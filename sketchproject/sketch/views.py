@@ -216,22 +216,6 @@ def objects(request, collection, database=None):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
 #this loads an instance of mapper
 from mappermanager import mappingManager
 
