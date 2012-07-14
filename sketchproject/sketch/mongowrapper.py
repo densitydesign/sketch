@@ -57,9 +57,12 @@ class MongoWrapper(object):
         
         
     
-    def objects(self, db_name, collection_name, query_dict={}, offset=0, limit=100):
+    def objects(self, db_name, collection_name, query_dict={}, offset=0, limit=100, formatter=None):
         collection = self.getCollection(db_name, collection_name)
         cursor = collection.find(query_dict)
+        
+        #TODO: handle offset
+        #TODO: handle formatter
 
         records = []
         counted = 0

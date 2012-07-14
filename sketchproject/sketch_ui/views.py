@@ -11,8 +11,11 @@ from django.contrib.auth.decorators import login_required
 def index(request):
     c = RequestContext(request)
     return render_to_response("sketch_ui/index.html", {}, context_instance = c)
-    
-    
+
+@login_required(login_url="/login/")
+def waw(request):
+    c = RequestContext(request)
+    return render_to_response("waw/index.html", {}, context_instance = c)
 
 @login_required(login_url="/login/")
 def logout_view(request):

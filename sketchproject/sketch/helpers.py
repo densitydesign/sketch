@@ -39,7 +39,6 @@ def getQueryDict(request, var_name='query'):
 
 
 def getLimit(request, var_name='limit'):
-    #TODO: handle a list of dicts        
     limit = request.GET.get(var_name) or request.POST.get(var_name)
     try:
         obj = int(limit)
@@ -48,11 +47,17 @@ def getLimit(request, var_name='limit'):
         return settings.DEFAULT_QUERY_LIMIT    
         
 
-def getOffset(request, var_name='offset'):
-    #TODO: handle a list of dicts        
+def getOffset(request, var_name='offset'): 
     offset = request.GET.get(var_name) or request.POST.get(var_name)
     try:
         obj = int(limit)
         return obj
     except:
         return 0
+
+
+def getFormatter(self, var_name='formatter'):
+    formatter = request.GET.get(var_name) or request.POST.get(var_name)
+    return formatter
+
+    
