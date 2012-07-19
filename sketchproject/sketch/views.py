@@ -242,7 +242,7 @@ def importCall(request, collection, database=None):
     database = database or settings.MONGO_SERVER_DEFAULT_DB
     mongo = MongoWrapper()
     mongo.connect()
-    
+    """    
     #TODO: mapping should come from url, in form of id
     mapping = { '__key__' : 'id_str', 
 #      '__upperName__' : { 'transform' : 'upperCase', 'args' : ['name'] },
@@ -250,9 +250,12 @@ def importCall(request, collection, database=None):
 #      '__fullNameUpper__' : { 'transform' : 'concatStrings', 
 #                              'args' : [{ 'transform' : 'upperCase', 'args' : ['name'] }, { 'transform' : 'upperCase', 'args' : ['surname'] }] },
     }
-
+    """
     
     if request.POST:
+    
+        mapper = request.POST.get('mapper')
+        #todo: if mapper is not none get it by id or by name
     
         record_errors_number = 0
         ok_records = []
@@ -270,12 +273,13 @@ def importCall(request, collection, database=None):
                     out['error_records']['parser'].append(str(d.exception_message) + ":" +d.raw_data)
                     continue
                 
-                try:
-                    newRecord = mappingManager.mapRecord(d, mapping)
-                    ok_records.append(newRecord)
+                if mapper is not None:
+                    try:
+                        newRecord = mappingManager.mapRecord(d, mapping)
+                        ok_records.append(newRecord)
                 
-                except:
-                    out['error_records']['mapper'].append(d)
+                    except:
+                        out['error_records']['mapper'].append(d)
                 
                 if len(out['error_records']['mapper']) + len(out['error_records']['parser']) > MAX_ERROR_RECORDS:
                     break
