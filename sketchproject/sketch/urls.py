@@ -16,6 +16,9 @@ urlpatterns = patterns('sketch.views',
     
     url(r'meta/server/$', 'serverMeta'),
     url(r'meta/parsers/$', 'parsersMeta'),
+    url(r'meta/transforms/$', 'transformsMeta'),
+    url(r'meta/processors/$', 'processorsMeta'),
+
     url(r'meta/db/(?P<database>\w+)/$', 'dbMeta'),
     
     url(r'ajaxlogin/$', 'ajaxLogin')

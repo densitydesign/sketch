@@ -15,6 +15,10 @@ class RecordMapper(object):
         self.transformFunctions[function.__name__] = function
         
         
+    def getTransforms(self):
+        return self.transformFunctions.keys()
+        
+        
     def mapField(self, record, mappingItem):
         
         mappingItemType = type(mappingItem)

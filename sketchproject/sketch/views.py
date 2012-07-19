@@ -116,6 +116,39 @@ def parsersMeta(request):
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
+def transformsMeta(request):
+    
+    import mappermanager
+    transforms = mappermanager.mappingManager.getTransforms()
+    
+    out = createBaseResponseObject()
+    try:
+        out['results'] = transforms
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
+def processorsMeta(request):
+    
+    import processingmanager
+    processors = processingmanager.processingManager.getProcessors()
+    
+    out = createBaseResponseObject()
+    try:
+        out['results'] = processors
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
+
 
 
 
