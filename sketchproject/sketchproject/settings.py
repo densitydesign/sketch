@@ -126,6 +126,9 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
+    
+    #json field 
+    'json_field',
 
     #our apps
     'sketch',
