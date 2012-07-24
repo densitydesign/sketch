@@ -3,8 +3,9 @@ from django.http import HttpResponse
 from django.utils.functional import wraps
 import json
 from models import SketchCollection
-
+from django.core.exceptions import DoesNotExist
 from helpers import createBaseResponseObject
+
 
 
 def login_required(view):    
@@ -29,7 +30,9 @@ def login_required(view):
 
     return inner_decorator
     
-    
+#todo: should be renamed to "can_write_collection"
+#todo: if collection does not exist, it's created for the user
+#todo: limit number of collections per user    
 def must_own_collection(view):    
     
     @wraps(view)
@@ -42,12 +45,17 @@ def must_own_collection(view):
 
         #collection = kwargs['collection']
         try:
-            #TODO: check user and collection
+            #check user and collection
             collectionInstance = SketchCollection.objects.get(name=collection)
             wa = collectionInstance.hasWriteAccess(request.user)
-            
             if wa:
                 return view(request, collection, *args, **kwargs)
+        
+        except DoesNotExist:
+            #TODO: we could limit the number of collections here
+            return view(request, collection, *args, **kwargs)
+        
+        
         except Exception, e:
             out['status'] = 0
             out['errors'] = [str(e)]

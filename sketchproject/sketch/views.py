@@ -300,12 +300,14 @@ def importCall(request, collection, database=None):
             data = request.POST['data']
             
         try:
+            #parsing phase
             parser = recordparser.parserFactory(format, data)
             for d in parser.objects():
                 if d is recordparser.ParserError:
                     out['error_records']['parser'].append(str(d.exception_message) + ":" +d.raw_data)
                     continue
                 
+                #mapping phase
                 if mapper is not None:
                     try:
                         newRecord = mappingManager.mapRecord(d, mapping)
@@ -317,7 +319,8 @@ def importCall(request, collection, database=None):
                 if len(out['error_records']['mapper']) + len(out['error_records']['parser']) > MAX_ERROR_RECORDS:
                     break
                     
-                
+
+            #commit phase
             if 'commit' in request.POST and request.POST['commit']:
                 try:
                     commit = int(request.POST['commit'])
@@ -325,6 +328,15 @@ def importCall(request, collection, database=None):
                     commit = 0
                     
                 if commit:
+                    #creating the collection model and set owner=user if collection does not exits
+                    #TODO: we could check again the number of allowed collections here, as in decorator
+                    try:
+                        collectionInstance = SketchCollection.objects.get(name=collection)
+                    except:
+                        collectionInstance = SketchCollection(owner=request.user, name=collection)
+                        collectionInstance.save()
+
+                    #finally inserting records
                     for record in ok_records:
                         mongo_id = mongo._insert(database, collection, record)
                         out['results'].append(mongo_id)
