@@ -3,23 +3,20 @@ from django.http import HttpResponse
 from django.utils.functional import wraps
 import json
 from models import SketchCollection
-from django.core.exceptions import DoesNotExist
 from helpers import createBaseResponseObject
-
-
 
 def login_required(view):    
     
     @wraps(view)
     def inner_decorator(request,*args, **kwargs):
     
-         out = createBaseResponseObject()
+        out = createBaseResponseObject()
         
         try:
             if request.user.is_authenticated():
                 return view(request, *args, **kwargs)
     
-        except Exception e:
+        except Exception, e:
             out['status'] = 0
             out['errors'] = [str(e)]
             return HttpResponse(json.dumps(out))
@@ -51,7 +48,7 @@ def must_own_collection(view):
             if wa:
                 return view(request, collection, *args, **kwargs)
         
-        except DoesNotExist:
+        except SketchCollection.DoesNotExist:
             #TODO: we could limit the number of collections here
             return view(request, collection, *args, **kwargs)
         
