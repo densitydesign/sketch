@@ -11,9 +11,11 @@ urlpatterns = patterns('sketch.views',
     url(r'objects/(?P<collection>\w+)/$', 'objects'),
     url(r'objects/(?P<database>\w+)/(?P<collection>\w+)/$', 'objects'),
     
+    #todo: probably this should be handled as a "POST" request to objects
     url(r'import/(?P<collection>\w+)/$', 'importCall'),
     url(r'import/(?P<database>\w+)/(?P<collection>\w+)/$', 'importCall'),
     
+    #todo: probably the "meta" part could be dropped in order to leave names alone
     url(r'meta/server/$', 'serverMeta'),
     url(r'meta/parsers/$', 'parsersMeta'),
     url(r'meta/transforms/$', 'transformsMeta'),
