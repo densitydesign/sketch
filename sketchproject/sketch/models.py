@@ -31,10 +31,15 @@ class SketchMapper(models.Model):
 class SketchCollection(models.Model):
     name = models.CharField(max_length=200, unique=True)
     owner = models.ForeignKey(User)
-    access_level = models.IntegerField(choices = SKETCH_ACCESS_LEVELS)
+    access_level = models.IntegerField(choices = SKETCH_ACCESS_LEVELS, null=True, blank=True)
 
 
     #helpers to get permissions
+    
+    def isOwner(self, user):
+
+        return self.owner == user
+    
     def getAccessLevelForUser(self, user):
          try:
             perm = self.sketch_permissions.get(user=user)
@@ -43,6 +48,9 @@ class SketchCollection(models.Model):
             return None
 
     def hasWriteAccess(self, user):
+        if self.isOwner(user):
+            return True
+
         level = self.getAccessLevelForUser(user)
         if level:
             return level >= 2
@@ -50,6 +58,8 @@ class SketchCollection(models.Model):
         return False
     
     def hasReadAccess(self, user):
+        if self.isOwner(user):
+            return True
         level = self.getAccessLevelForUser(user)
         if level:
             return level >= 1
@@ -68,7 +78,7 @@ class SketchCollection(models.Model):
         perm.save()
             
     def grantReadAccess(self, user):
-        if self.owner is not user:
+        if not self.isOwner(user):
             self.setAccessLevel(user, 1)
        
     def revokeReadAccess(self, user):
@@ -80,7 +90,7 @@ class SketchCollection(models.Model):
 
 
     def grantWriteAccess(self, user):
-        if self.owner is not user:
+        if not self.isOwner(user):
             self.setAccessLevel(user, 2)
 
     def revokeWriteAccess(self, user):
