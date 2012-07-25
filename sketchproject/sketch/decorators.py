@@ -30,7 +30,7 @@ def login_required(view):
 #todo: should be renamed to "can_write_collection"
 #todo: if collection does not exist, it's created for the user
 #todo: limit number of collections per user    
-def must_own_collection(view):    
+def can_write_collection(view):    
     
     @wraps(view)
     def inner_decorator(request, collection, *args, **kwargs):

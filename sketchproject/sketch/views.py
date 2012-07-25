@@ -257,7 +257,7 @@ from mappermanager import mappingManager
 #TODO: handle write permissions, with decorator
 
 @decorators.login_required
-@decorators.must_own_collection
+@decorators.can_write_collection
 #temporarily remove crsf control to test easily with curl
 @csrf_exempt
 def importCall(request, collection, database=None):
