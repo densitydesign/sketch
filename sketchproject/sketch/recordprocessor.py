@@ -25,6 +25,7 @@ class RecordProcessor(object):
         
     def process(self, recordsList, functionNamesAndArgs):
         
+        #TODO: probably deepcopy is useless and overkill
         out = copy.deepcopy(records)
         for functionNameAndArgs in functionNamesAndArgs:
             functionName = functionNameAndArgs['process']

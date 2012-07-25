@@ -251,7 +251,7 @@ def objects(request, collection, database=None):
 
 
 
-#this loads an instance of mapper
+
 
 @decorators.login_required
 @decorators.can_write_collection
@@ -261,7 +261,7 @@ def importCall(request, collection, database=None):
     """
     View used to import data.
     """
-    
+    #this loads an instance of mapper    
     from mappermanager import mappingManager
 
     #TODO: separate data collection and processing and write a view that handles FILES
@@ -354,3 +354,23 @@ def importCall(request, collection, database=None):
         
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
     
+
+
+
+
+#processing view
+#TODO: handle read permission
+def processObjects(request, collection, database=None):
+    """
+    this view applies processing to a set of records
+    """
+    
+    #TODO: get the records with a filter or with a list of ids
+    #TODO: handle a list of processing functions and argss to be passed in
+    #TODO: consider GET vs POST for calling this view. If no records are changed server side,
+    #      GET method should be used
+    
+    
+    
+    out = createBaseResponseObject()
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
