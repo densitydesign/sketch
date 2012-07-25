@@ -26,9 +26,8 @@ def login_required(view):
         return HttpResponse(json.dumps(out))
 
     return inner_decorator
+
     
-#todo: should be renamed to "can_write_collection"
-#todo: if collection does not exist, it's created for the user
 #todo: limit number of collections per user    
 def can_write_collection(view):    
     
