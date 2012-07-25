@@ -252,9 +252,6 @@ def objects(request, collection, database=None):
 
 
 #this loads an instance of mapper
-from mappermanager import mappingManager
-
-#TODO: handle write permissions, with decorator
 
 @decorators.login_required
 @decorators.can_write_collection
@@ -264,6 +261,8 @@ def importCall(request, collection, database=None):
     """
     View used to import data.
     """
+    
+    from mappermanager import mappingManager
 
     #TODO: separate data collection and processing and write a view that handles FILES
     
