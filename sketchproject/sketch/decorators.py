@@ -62,3 +62,29 @@ def can_write_collection(view):
         return HttpResponse(json.dumps(out))
 
     return inner_decorator
+    
+    
+#todo: limit number of collections per user    
+def can_read_collection(view):    
+    
+    @wraps(view)
+    def inner_decorator(request, collection, *args, **kwargs):
+        
+        out = createBaseResponseObject()
+                try:
+            #check user and collection
+            collectionInstance = SketchCollection.objects.get(name=collection)
+            wa = collectionInstance.hasReadAccess(request.user)
+            if wa:
+                return view(request, collection, *args, **kwargs)
+        
+        except Exception, e:
+            out['status'] = 0
+            out['errors'] = [str(e)]
+            return HttpResponse(json.dumps(out))
+        
+        out['status'] = 0
+        out['errors'] = ['You must own collection %s or have the right to read to it.' % collection]
+        return HttpResponse(json.dumps(out))
+
+    return inner_decorator
