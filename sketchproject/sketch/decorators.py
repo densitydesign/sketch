@@ -71,7 +71,7 @@ def can_read_collection(view):
     def inner_decorator(request, collection, *args, **kwargs):
         
         out = createBaseResponseObject()
-                try:
+        try:
             #check user and collection
             collectionInstance = SketchCollection.objects.get(name=collection)
             wa = collectionInstance.hasReadAccess(request.user)

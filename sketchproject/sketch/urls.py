@@ -16,7 +16,7 @@ urlpatterns = patterns('sketch.views',
     url(r'import/(?P<database>\w+)/(?P<collection>\w+)/$', 'importCall'),
     
     url(r'server/$', 'server'),
-    url(r'parsers/$', 'parsersì'),
+    url(r'parsers/$', 'parsers'),
     url(r'transforms/$', 'transforms'),
     url(r'processors/$', 'processors'),
 
