@@ -274,15 +274,6 @@ def importCall(request, collection, database=None):
     database = database or settings.MONGO_SERVER_DEFAULT_DB
     mongo = MongoWrapper()
     mongo.connect()
-    """    
-    #TODO: mapping should come from url, in form of id
-    mapping = { '__key__' : 'id_str', 
-#      '__upperName__' : { 'transform' : 'upperCase', 'args' : ['name'] },
-#      '__fullName__' : { 'transform' : 'concatStrings', 'args' : ['name', 'surname'] },
-#      '__fullNameUpper__' : { 'transform' : 'concatStrings', 
-#                              'args' : [{ 'transform' : 'upperCase', 'args' : ['name'] }, { 'transform' : 'upperCase', 'args' : ['surname'] }] },
-    }
-    """
     
     if request.POST:
     
