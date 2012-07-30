@@ -32,6 +32,10 @@ class SketchCollection(models.Model):
     name = models.CharField(max_length=200, unique=True)
     owner = models.ForeignKey(User)
     access_level = models.IntegerField(choices = SKETCH_ACCESS_LEVELS, null=True, blank=True)
+    
+    
+    def __unicode__(self):
+        return u'%s' % self.name
 
 
     #helpers to get permissions
