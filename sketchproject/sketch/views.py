@@ -291,8 +291,7 @@ def importCall(request, collection, database=None):
     
         record_errors_number = 0
         ok_records = []
-        #TODO: PARAMETRIZE THIS, maybe in settings
-        MAX_ERROR_RECORDS = 10000
+        MAX_ERROR_RECORDS = settings.MAX_ERROR_RECORDS
     
         if 'data' in request.POST and 'format' in request.POST:
             format = request.POST['format'].lower()
