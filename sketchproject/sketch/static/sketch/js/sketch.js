@@ -35,10 +35,9 @@ sketchjs.Sketch.prototype.login = function(username, pwd, successCallback){
 
 
 
-/* meta function */
-sketchjs.Sketch.prototype.getServerMeta = function(successCallback){
+sketchjs.Sketch.prototype.getServer = function(successCallback){
 
-    var url = this.url + "/sketch/meta/server/";
+    var url = this.url + "/sketch/server/";
     
     $.ajax({
         type: 'GET',
@@ -50,9 +49,9 @@ sketchjs.Sketch.prototype.getServerMeta = function(successCallback){
 };
 
 /* meta function */
-sketchjs.Sketch.prototype.getDbMeta = function(successCallback){
+sketchjs.Sketch.prototype.getDb = function(successCallback){
 
-    var url = this.url + "/sketch/meta/db/" + this.database + "/";
+    var url = this.url + "/sketch/db/" + this.database + "/";
     
     $.ajax({
         type: 'GET',
@@ -65,9 +64,9 @@ sketchjs.Sketch.prototype.getDbMeta = function(successCallback){
 
 
 /* meta function */
-sketchjs.Sketch.prototype.getParsersMeta = function(successCallback){
+sketchjs.Sketch.prototype.getParsers = function(successCallback){
 
-    var url = this.url + "/sketch/meta/parsers/";
+    var url = this.url + "/sketch/parsers/";
     
     $.ajax({
         type: 'GET',
