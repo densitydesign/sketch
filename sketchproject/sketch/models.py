@@ -27,6 +27,20 @@ class SketchMapper(models.Model):
     owner = models.ForeignKey(User)
     access = models.IntegerField(choices = SKETCH_ACCESS_LEVELS)    
     
+    def clean(self):    
+        from django.core.exceptions import ValidationError
+        from mappermanager import mappingManager
+        print "mpp", self.mapper, type(self.mapper)
+        try:
+            mappingManager.validateMapping(self.mapper)
+        except Exception, e:
+            raise ValidationError(str(e))
+    
+    
+    def save(self, *args, **kwargs):
+        
+        super(SketchMapper, self).save(*args, **kwargs)
+    
     
 class SketchCollection(models.Model):
     name = models.CharField(max_length=200, unique=True)
