@@ -15,13 +15,12 @@ urlpatterns = patterns('sketch.views',
     url(r'import/(?P<collection>\w+)/$', 'importCall'),
     url(r'import/(?P<database>\w+)/(?P<collection>\w+)/$', 'importCall'),
     
-    #todo: probably the "meta" part could be dropped in order to leave names alone
-    url(r'meta/server/$', 'serverMeta'),
-    url(r'meta/parsers/$', 'parsersMeta'),
-    url(r'meta/transforms/$', 'transformsMeta'),
-    url(r'meta/processors/$', 'processorsMeta'),
+    url(r'server/$', 'server'),
+    url(r'parsers/$', 'parsersì'),
+    url(r'transforms/$', 'transforms'),
+    url(r'processors/$', 'processors'),
 
-    url(r'meta/db/(?P<database>\w+)/$', 'dbMeta'),
+    url(r'db/(?P<database>\w+)/$', 'db'),
     
     url(r'ajaxlogin/$', 'ajaxLogin')
 

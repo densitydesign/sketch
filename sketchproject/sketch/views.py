@@ -43,7 +43,7 @@ def ajaxLogin(request):
 
 #TODO: probably we want another type of response here
 #TODO: wrap metadata calls in a single view (for example collection names)
-def serverMeta(request):
+def server(request):
 
     mongo = MongoWrapper()
     
@@ -70,7 +70,7 @@ def serverMeta(request):
     
 #TODO: probably we want another type of response here
 #TODO: wrap metadata calls in a single view (for example collection names)
-def dbMeta(request, database):
+def db(request, database):
 
     mongo = MongoWrapper()
     
@@ -103,7 +103,7 @@ def dbMeta(request, database):
 
 #TODO: probably we want another type of response here
 #TODO: wrap metadata calls in a single view (for example collection names)
-def parsersMeta(request):
+def parsers(request):
     
     out = createBaseResponseObject()
     try:
@@ -116,7 +116,7 @@ def parsersMeta(request):
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
-def transformsMeta(request):
+def transforms(request):
     
     import mappermanager
     transforms = mappermanager.mappingManager.getTransforms()
@@ -132,7 +132,7 @@ def transformsMeta(request):
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
-def processorsMeta(request):
+def processors(request):
     
     import processingmanager
     processors = processingmanager.processingManager.getProcessors()
