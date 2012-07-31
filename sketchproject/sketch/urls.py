@@ -15,14 +15,19 @@ urlpatterns = patterns('sketch.views',
     url(r'import/(?P<collection>\w+)/$', 'importCall'),
     url(r'import/(?P<database>\w+)/(?P<collection>\w+)/$', 'importCall'),
     
+    # introspection views
+    # These view describe the state of a particular sketch instance,
+    # showing available resources in terms of databases, collections, parsers, mappers,
+    # transforms, processors
+    
     url(r'server/$', 'server'),
+    url(r'db/(?P<database>\w+)/$', 'db'),
     url(r'parsers/$', 'parsers'),
+    url(r'mappers/$', 'mappers'), 
     url(r'transforms/$', 'transforms'),
     url(r'processors/$', 'processors'), 
-    url(r'mappers/$', 'mappers'), 
-    
-    url(r'db/(?P<database>\w+)/$', 'db'),
-    
+
+    #ajax login view.
     url(r'ajaxlogin/$', 'ajaxLogin')
 
     
