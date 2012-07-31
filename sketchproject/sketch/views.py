@@ -379,7 +379,8 @@ def processObjects(request, collection, database=None):
     #TODO: handle a list of processing functions and argss to be passed in
     #TODO: consider GET vs POST for calling this view. If no records are changed server side,
     #      GET method should be used
-    
+    #TODO: consider writing output to a collection
+    #TODO: leverage map/reduce when possible
     
     
     out = createBaseResponseObject()
