@@ -18,8 +18,9 @@ urlpatterns = patterns('sketch.views',
     url(r'server/$', 'server'),
     url(r'parsers/$', 'parsers'),
     url(r'transforms/$', 'transforms'),
-    url(r'processors/$', 'processors'),
-
+    url(r'processors/$', 'processors'), 
+    url(r'mappers/$', 'mappers'), 
+    
     url(r'db/(?P<database>\w+)/$', 'db'),
     
     url(r'ajaxlogin/$', 'ajaxLogin')

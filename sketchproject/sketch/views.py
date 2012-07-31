@@ -13,8 +13,10 @@ import bson.json_util
 import decorators
 from mongowrapper import MongoWrapper
 from helpers import createBaseResponseObject, createResponseObjectWithError
-from helpers import getQueryDict, getOffset, getLimit, getFormatter
+from helpers import getQueryDict, getOffset, getLimit, getFormatter, getMapper, instanceDict
 import recordparser
+
+from models import SketchMapper
 
 
 
@@ -148,7 +150,20 @@ def processors(request):
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
-
+def mappers(request):
+    
+    out = createBaseResponseObject()
+    try:
+        maps = SketchMapper.objects.all()
+        out['results'] = []
+        for map in maps:
+            out['results'].append(instanceDict(map))
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
 
@@ -276,9 +291,14 @@ def importCall(request, collection, database=None):
     mongo.connect()
     
     if request.POST:
-    
-        mapper = request.POST.get('mapper')
-        #todo: if mapper is not none get it by id or by name
+        
+        mapper = None
+        mappingName = getMapper(request)
+        #todo: decide to use name or id for referencing mapper in request
+        if mappingName:
+            sketchMapper = SketchMapper.objects.get(name=mappingName)
+            mapper = json.loads(sketchMapper.mapper)
+            
     
         record_errors_number = 0
         ok_records = []
