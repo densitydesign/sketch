@@ -16,7 +16,7 @@ from helpers import createBaseResponseObject, createResponseObjectWithError
 from helpers import getQueryDict, getOffset, getLimit, getFormatter, getMapper, instanceDict
 import recordparser
 
-from models import SketchMapper
+from models import SketchMapper, SketchCollection
 
 
 
