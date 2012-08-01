@@ -1,7 +1,6 @@
 from __future__ import absolute_import
+
 from django.core.management.base import BaseCommand
-
-
 from optparse import make_option
 import sketch
 import sketch.models
@@ -16,12 +15,11 @@ class Command(BaseCommand):
     
     option_list = BaseCommand.option_list + (
         make_option('--database', action='store', dest='database', default='',
-        help='Lists available mappers'),
-    
+        help='selects database'),
     
     )
     
-    args = 'server|db|parsers|formatters|mappers'
+    args = 'server|db|parsers|formatters|mappers|transforms|processors'
 
     command_name = 'sketchinfo'
     
@@ -30,13 +28,12 @@ class Command(BaseCommand):
         lines = ['Sketch command line interface.', '', 'Available commands:']
         return '\n'.join(lines)
         
-    #todo: decide what to handle exactly        
+    #todo: decide what to output exactly, the implementation is not consistent         
     def handle(self, *args, **options):
     
         if 'server' in args:
             data = sketch.views.getServerInfo()
             print data
-
 
         if 'db' in args:
             database = options['database']
