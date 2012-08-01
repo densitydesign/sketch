@@ -23,6 +23,9 @@ class Command(BaseCommand):
         
         make_option('--limit', action='store', dest='limit', default='',
         help='Limit'),
+        
+         make_option('--offset', action='store', dest='offset', default='',
+        help='Offset'),
 
         make_option('--collection', action='store', dest='collection', default='',
         help='Selects collection'),
@@ -30,14 +33,13 @@ class Command(BaseCommand):
         
     )
     
-    args = 'database collection'
-
+    #args = 'database collection'
     command_name = 'sketchobjects'
     
     @property
     def help(self):
-        lines = ['Sketch command line interface.', '', 'Available commands:']
-        return '\n'.join(lines)
+        #TODO: write help text
+        return ""
         
     def handle(self, *args, **options):
         
@@ -49,14 +51,23 @@ class Command(BaseCommand):
             print "Collection must be specified with --collection"
             return
 
-        print collection
-        
+        #TODO: formatter           
+        formatter = None
         
         query = options['query']
+        if query:
+            try:
+                query_dict = json.loads(query)
+            except:
+                print "Invalid query"
+                return
+        else:
+            query_dict  = dict()
+        
         try:
             limit = int(options['limit'])
         except:
-            limit = 0
+            limit = None
         
         try:
             offset = int(options['offset'])        
@@ -64,4 +75,46 @@ class Command(BaseCommand):
             offset = 0
         
         #TODO: get objects    
+        mongo = sketch.mongowrapper.MongoWrapper()
+        
+        out = sketch.helpers.createBaseResponseObject()
+    
+        try:
+            
+            mongo.connect()
+        
+            existing_dbs = mongo.connection.database_names()
+            if database not in existing_dbs:
+                raise Exception("Database %s does not exist" % database)
+                
+            database_object = mongo.getDb(database)
+            existing_collections = database_object.collection_names()
+            if collection not in existing_collections:
+                raise Exception("Collection %s does not exist" % collection)
+            
+            
+            query_result = mongo.objects(database, collection, query_dict=query_dict, offset=offset, limit=limit, 
+                                         formatter=formatter)
+             
+            out.update(query_result)
+        
+        except Exception, e:
+            out['errors'] = str(e)
+            out['status'] = 0
+        
+        try:
+            mongo.connection.close()
+        except:
+            pass
+        
+        
+        print out
+        
+        
+        
+        
+        
+        
+        
+        
     
