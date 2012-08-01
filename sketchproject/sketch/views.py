@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
+from django.core.serializers.json import DjangoJSONEncoder
 
 import datetime
 import settings
@@ -13,8 +14,12 @@ import bson.json_util
 import decorators
 from mongowrapper import MongoWrapper
 from helpers import createBaseResponseObject, createResponseObjectWithError
-from helpers import getQueryDict, getOffset, getLimit, getFormatter
+from helpers import getQueryDict, getOffset, getLimit, getFormatter, getMapper, instanceDict
 import recordparser
+
+from models import SketchMapper, SketchCollection
+
+
 
 
 
@@ -41,10 +46,7 @@ def ajaxLogin(request):
 
 
 
-#TODO: probably we want another type of response here
-#TODO: wrap metadata calls in a single view (for example collection names)
-def serverMeta(request):
-
+def getServerInfo():
     mongo = MongoWrapper()
     
     try:
@@ -61,19 +63,20 @@ def serverMeta(request):
         mongo.connection.close()
     except:
         pass
-    
+        
+    return out
+
+
+def server(request):
+    out = getServerInfo()
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
 
-
+#gets info about a database
+def getDbInfo(database):
     
-#TODO: probably we want another type of response here
-#TODO: wrap metadata calls in a single view (for example collection names)
-def dbMeta(request, database):
-
     mongo = MongoWrapper()
-    
     try:
         out = createBaseResponseObject()
         mongo.connect()
@@ -96,14 +99,16 @@ def dbMeta(request, database):
     except:
         pass
     
+    return out
+
+
+def db(request, database):
+
+    out = getDbInfo(database)
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
-
-
-#TODO: probably we want another type of response here
-#TODO: wrap metadata calls in a single view (for example collection names)
-def parsersMeta(request):
+def parsers(request):
     
     out = createBaseResponseObject()
     try:
@@ -116,6 +121,52 @@ def parsersMeta(request):
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
+def transforms(request):
+    
+    import mappermanager
+    transforms = mappermanager.mappingManager.getTransforms()
+    
+    out = createBaseResponseObject()
+    try:
+        out['results'] = transforms
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
+def processors(request):
+    
+    import processingmanager
+    processors = processingmanager.processingManager.getProcessors()
+    
+    out = createBaseResponseObject()
+    try:
+        out['results'] = processors
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
+def mappers(request):
+    
+    out = createBaseResponseObject()
+    try:
+        maps = SketchMapper.objects.all()
+        out['results'] = []
+        for map in maps:
+            out['results'].append(instanceDict(map))
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
 
@@ -218,19 +269,18 @@ def objects(request, collection, database=None):
 
 
 
-#this loads an instance of mapper
-from mappermanager import mappingManager
 
-#TODO: handle write permissions, with decorator
 
 @decorators.login_required
-@decorators.must_own_collection
+@decorators.can_write_collection
 #temporarily remove crsf control to test easily with curl
 @csrf_exempt
 def importCall(request, collection, database=None):
     """
     View used to import data.
     """
+    #this loads an instance of mapper    
+    from mappermanager import mappingManager
 
     #TODO: separate data collection and processing and write a view that handles FILES
     
@@ -243,44 +293,50 @@ def importCall(request, collection, database=None):
     mongo = MongoWrapper()
     mongo.connect()
     
-    #TODO: mapping should come from url, in form of id
-    mapping = { '__key__' : 'id_str', 
-#      '__upperName__' : { 'transform' : 'upperCase', 'args' : ['name'] },
-#      '__fullName__' : { 'transform' : 'concatStrings', 'args' : ['name', 'surname'] },
-#      '__fullNameUpper__' : { 'transform' : 'concatStrings', 
-#                              'args' : [{ 'transform' : 'upperCase', 'args' : ['name'] }, { 'transform' : 'upperCase', 'args' : ['surname'] }] },
-    }
-
-    
     if request.POST:
+        
+        mapper = None
+        mappingName = getMapper(request)
+        #todo: decide to use name or id for referencing mapper in request
+        if mappingName:
+            sketchMapper = SketchMapper.objects.get(name=mappingName)
+            mapper = json.loads(sketchMapper.mapper)
+            
     
         record_errors_number = 0
         ok_records = []
-        #TODO: PARAMETRIZE THIS, maybe in settings
-        MAX_ERROR_RECORDS = 10000
+        MAX_ERROR_RECORDS = settings.MAX_ERROR_RECORDS
     
         if 'data' in request.POST and 'format' in request.POST:
             format = request.POST['format'].lower()
             data = request.POST['data']
             
         try:
+            #parsing phase
             parser = recordparser.parserFactory(format, data)
             for d in parser.objects():
                 if d is recordparser.ParserError:
                     out['error_records']['parser'].append(str(d.exception_message) + ":" +d.raw_data)
                     continue
                 
-                try:
-                    newRecord = mappingManager.mapRecord(d, mapping)
-                    ok_records.append(newRecord)
+                #mapping phase
+                if mapper is not None:
+                    try:
+                        newRecord = mappingManager.mapRecord(d, mapping)
+                        ok_records.append(newRecord)
                 
-                except:
-                    out['error_records']['mapper'].append(d)
+                    except:
+                        out['error_records']['mapper'].append(d)
+
+                #mapper is none, record is imported as it is
+                else:
+                    ok_records.append(d)
                 
                 if len(out['error_records']['mapper']) + len(out['error_records']['parser']) > MAX_ERROR_RECORDS:
                     break
                     
-                
+
+            #commit phase
             if 'commit' in request.POST and request.POST['commit']:
                 try:
                     commit = int(request.POST['commit'])
@@ -288,6 +344,15 @@ def importCall(request, collection, database=None):
                     commit = 0
                     
                 if commit:
+                    #creating the collection model and set owner=user if collection does not exits
+                    #TODO: we could check again the number of allowed collections here, as in decorator
+                    try:
+                        collectionInstance = SketchCollection.objects.get(name=collection)
+                    except:
+                        collectionInstance = SketchCollection(owner=request.user, name=collection)
+                        collectionInstance.save()
+
+                    #finally inserting records
                     for record in ok_records:
                         mongo_id = mongo._insert(database, collection, record)
                         out['results'].append(mongo_id)
@@ -306,3 +371,24 @@ def importCall(request, collection, database=None):
         
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
     
+
+
+
+
+#processing view
+#TODO: handle read permission
+def processObjects(request, collection, database=None):
+    """
+    this view applies processing to a set of records
+    """
+    
+    #TODO: get the records with a filter or with a list of ids
+    #TODO: handle a list of processing functions and argss to be passed in
+    #TODO: consider GET vs POST for calling this view. If no records are changed server side,
+    #      GET method should be used
+    #TODO: consider writing output to a collection
+    #TODO: leverage map/reduce when possible
+    
+    
+    out = createBaseResponseObject()
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))

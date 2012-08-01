@@ -75,9 +75,9 @@
 
     $("#test-meta-server").click(function(){
 
-        sketch.getServerMeta(function(response){
+        sketch.getServer(function(response){
         
-            $("#console-div").append("getServerMeta called<br/>");
+            $("#console-div").append("getServer called<br/>");
             logErrorsAndResults(response);
         
         });
@@ -87,9 +87,9 @@
     
     $("#test-meta-db").click(function(){
 
-        sketch.getDbMeta(function(response){
+        sketch.getDb(function(response){
         
-            $("#console-div").append("getDbMeta called<br/>");
+            $("#console-div").append("getDb called<br/>");
             logErrorsAndResults(response)
         
         });
@@ -98,9 +98,9 @@
     
     $("#test-meta-parsers").click(function(){
 
-        sketch.getParsersMeta(function(response){
+        sketch.getParsers(function(response){
         
-            $("#console-div").append("getParsersMeta called<br/>");
+            $("#console-div").append("getParsers called<br/>");
             logErrorsAndResults(response);
         
         });

@@ -11,13 +11,23 @@ urlpatterns = patterns('sketch.views',
     url(r'objects/(?P<collection>\w+)/$', 'objects'),
     url(r'objects/(?P<database>\w+)/(?P<collection>\w+)/$', 'objects'),
     
+    #todo: probably this should be handled as a "POST" request to objects
     url(r'import/(?P<collection>\w+)/$', 'importCall'),
     url(r'import/(?P<database>\w+)/(?P<collection>\w+)/$', 'importCall'),
     
-    url(r'meta/server/$', 'serverMeta'),
-    url(r'meta/parsers/$', 'parsersMeta'),
-    url(r'meta/db/(?P<database>\w+)/$', 'dbMeta'),
+    # introspection views
+    # These view describe the state of a particular sketch instance,
+    # showing available resources in terms of databases, collections, parsers, mappers,
+    # transforms, processors
     
+    url(r'server/$', 'server'),
+    url(r'db/(?P<database>\w+)/$', 'db'),
+    url(r'parsers/$', 'parsers'),
+    url(r'mappers/$', 'mappers'), 
+    url(r'transforms/$', 'transforms'),
+    url(r'processors/$', 'processors'), 
+
+    #ajax login view.
     url(r'ajaxlogin/$', 'ajaxLogin')
 
     
