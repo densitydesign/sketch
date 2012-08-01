@@ -48,7 +48,7 @@ sketchjs.Sketch.prototype.getServer = function(successCallback){
     
 };
 
-/* meta function */
+
 sketchjs.Sketch.prototype.getDb = function(successCallback){
 
     var url = this.url + "/sketch/db/" + this.database + "/";
@@ -63,10 +63,50 @@ sketchjs.Sketch.prototype.getDb = function(successCallback){
 };
 
 
-/* meta function */
 sketchjs.Sketch.prototype.getParsers = function(successCallback){
 
     var url = this.url + "/sketch/parsers/";
+    
+    $.ajax({
+        type: 'GET',
+        url: url,
+        success: successCallback,
+        dataType: 'json'
+    });   
+    
+};
+
+
+sketchjs.Sketch.prototype.getFormatters = function(successCallback){
+
+    var url = this.url + "/sketch/formatters/";
+    
+    $.ajax({
+        type: 'GET',
+        url: url,
+        success: successCallback,
+        dataType: 'json'
+    });   
+    
+};
+
+sketchjs.Sketch.prototype.getMappers = function(successCallback){
+
+    var url = this.url + "/sketch/mappers/";
+    
+    $.ajax({
+        type: 'GET',
+        url: url,
+        success: successCallback,
+        dataType: 'json'
+    });   
+    
+};
+
+
+sketchjs.Sketch.prototype.getProcessors = function(successCallback){
+
+    var url = this.url + "/sketch/processors/";
     
     $.ajax({
         type: 'GET',
