@@ -46,10 +46,7 @@ def ajaxLogin(request):
 
 
 
-#TODO: probably we want another type of response here
-#TODO: wrap metadata calls in a single view (for example collection names)
-def server(request):
-
+def getServerInfo():
     mongo = MongoWrapper()
     
     try:
@@ -66,19 +63,20 @@ def server(request):
         mongo.connection.close()
     except:
         pass
-    
+        
+    return out
+
+
+def server(request):
+    out = getServerInfo()
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
 
-
+#gets info about a database
+def getDbInfo(database):
     
-#TODO: probably we want another type of response here
-#TODO: wrap metadata calls in a single view (for example collection names)
-def db(request, database):
-
     mongo = MongoWrapper()
-    
     try:
         out = createBaseResponseObject()
         mongo.connect()
@@ -101,13 +99,15 @@ def db(request, database):
     except:
         pass
     
+    return out
+
+
+def db(request, database):
+
+    out = getDbInfo(database)
     return HttpResponse(json.dumps(out, default=bson.json_util.default))
 
 
-
-
-#TODO: probably we want another type of response here
-#TODO: wrap metadata calls in a single view (for example collection names)
 def parsers(request):
     
     out = createBaseResponseObject()
