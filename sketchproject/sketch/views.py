@@ -324,6 +324,10 @@ def importCall(request, collection, database=None):
                 
                     except:
                         out['error_records']['mapper'].append(d)
+
+                #mapper is none, record is imported as it is
+                else:
+                    ok_records.append(d)
                 
                 if len(out['error_records']['mapper']) + len(out['error_records']['parser']) > MAX_ERROR_RECORDS:
                     break
