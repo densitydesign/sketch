@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
+from django.core.serializers.json import DjangoJSONEncoder
 
 import datetime
 import settings
@@ -17,6 +18,8 @@ from helpers import getQueryDict, getOffset, getLimit, getFormatter, getMapper, 
 import recordparser
 
 from models import SketchMapper, SketchCollection
+
+
 
 
 
