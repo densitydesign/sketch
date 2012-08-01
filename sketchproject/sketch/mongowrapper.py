@@ -58,25 +58,31 @@ class MongoWrapper(object):
         
     
     def objects(self, db_name, collection_name, query_dict={}, offset=0, limit=100, formatter=None):
+        """
+        Performs find on a collection, with offset and limit parameters
+        
+        Passing None as limit to this function returns all objects.
+        The web view should not permit it.
+        
+        """
         collection = self.getCollection(db_name, collection_name)
         cursor = collection.find(query_dict)
         
-        #TODO: handle offset
-        #TODO: handle formatter
+        #TODO: formatter
 
         records = []
         counted = 0
         has_more = False
         
-        for r in cursor:
-            if counted < limit:
+        for r in cursor[offset:]:
+            if counted < limit or limit is None:
                 records.append(r)
                 counted += 1
             else:
                 has_more = True
                 break
         
-        out = {'records' : records, 'has_more' : has_more}
+        out = {'records' : records, 'has_more' : has_more, 'num_records' : counted }
         return out
     
     
