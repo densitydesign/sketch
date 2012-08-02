@@ -11,6 +11,11 @@ import sketch.mappermanager
 import sketch.processingmanager
 import sketch.helpers
 import sketch.mongowrapper
+import json
+import bson.json_util
+
+#TODO: replace all print statements with self.stdout.write('...')
+#TODO: consider throwing exception vs return
 
 class Command(BaseCommand):
     
@@ -29,11 +34,9 @@ class Command(BaseCommand):
 
         make_option('--collection', action='store', dest='collection', default='',
         help='Selects collection'),
-
-        
     )
     
-    #args = 'database collection'
+    args = ''
     command_name = 'sketchobjects'
     
     @property
@@ -57,9 +60,9 @@ class Command(BaseCommand):
         query = options['query']
         if query:
             try:
-                query_dict = json.loads(query)
-            except:
-                print "Invalid query"
+                query_dict = json.loads(query, object_hook=bson.json_util.object_hook)
+            except Exception, err:
+                print "Invalid query:", str(err)
                 return
         else:
             query_dict  = dict()
@@ -80,7 +83,6 @@ class Command(BaseCommand):
         out = sketch.helpers.createBaseResponseObject()
     
         try:
-            
             mongo.connect()
         
             existing_dbs = mongo.connection.database_names()
@@ -111,10 +113,3 @@ class Command(BaseCommand):
         print out
         
         
-        
-        
-        
-        
-        
-        
-    

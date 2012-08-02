@@ -14,6 +14,11 @@ import sketch.mongowrapper
 import sketch.recordparser
 import django.contrib.auth.models as authmodels
 
+
+#TODO: replace all print statements with self.stdout.write('...')
+#TODO: consider throwing exception vs return
+#TODO: json output
+
 class Command(BaseCommand):
     
     option_list = BaseCommand.option_list + (
@@ -32,10 +37,9 @@ class Command(BaseCommand):
         make_option('--commit', action='store_true', dest='commit', default=False,
         help='Enables commit'),
         
-        
     )
-    
-    args = 'data'
+
+    args = ''
     command_name = 'sketchimport'
     
     @property
@@ -58,7 +62,7 @@ class Command(BaseCommand):
         
         except Exception, err:
             print "Invalid data file: ", str(err)    
-        
+            return
             
         database = options['database']
         database = database or sketch.settings.MONGO_SERVER_DEFAULT_DB   
@@ -69,22 +73,20 @@ class Command(BaseCommand):
             return
             
         parser_class = options['format']
-
-        #todo: control availableparsers
-        
         if not parser_class:
             print "Format must be specified with --format"
             return
         if parser_class not in sketch.recordparser.ALLOWED_PARSERS.keys():
             print "Unrecognized import format: --format must be one of:\n" + "\n".join(sketch.recordparser.ALLOWED_PARSERS.keys())
             return
-    
-        
 
-        #TODO: mapper
+        #TODO: mapper name
         mapper = None
+        
         commit = options['commit']
 
+        
+        ####
         out = sketch.helpers.createBaseResponseObject()
         
         out['error_records'] = { 'parser' : [], 'mapper' : [] }
@@ -108,6 +110,10 @@ class Command(BaseCommand):
         record_errors_number = 0
         ok_records = []
         MAX_ERROR_RECORDS = sketch.settings.MAX_ERROR_RECORDS
+        
+        
+        #TODO: refactor this try ... except section.
+        #IT is repeated in views, provide a more  abstract version
             
         try:
             #parsing phase

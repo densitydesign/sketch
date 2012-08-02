@@ -1,5 +1,7 @@
 import json
 import settings
+import bson
+import bson.json_util
 
 def instanceDict(instance, key_format=None):
     "Returns a dictionary containing field names and values for the given instance"
@@ -54,7 +56,7 @@ def getQueryDict(request, var_name='query'):
     #TODO: handle a list of dicts        
     queryDict = request.GET.get(var_name) or request.POST.get(var_name)
     try:
-        obj = json.loads(jsonString)
+        obj = json.loads(jsonString, object_hook=bson.json_util.object_hook)
         return dict(obj)
     except:
         return {}    
