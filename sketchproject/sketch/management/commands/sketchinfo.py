@@ -11,6 +11,10 @@ import sketch.mappermanager
 import sketch.processingmanager
 import sketch.helpers
 
+
+#TODO: replace all print statements with self.stdout.write('...')
+#TODO: consider throwing exception vs return
+
 class Command(BaseCommand):
     
     option_list = BaseCommand.option_list + (

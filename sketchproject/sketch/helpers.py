@@ -1,5 +1,7 @@
 import json
 import settings
+import bson
+import bson.json_util
 
 def instanceDict(instance, key_format=None):
     "Returns a dictionary containing field names and values for the given instance"
@@ -53,10 +55,14 @@ def createResponseObjectWithError(error):
 def getQueryDict(request, var_name='query'):
     #TODO: handle a list of dicts        
     queryDict = request.GET.get(var_name) or request.POST.get(var_name)
+    if queryDict == '':
+        return {}
+        
     try:
-        obj = json.loads(jsonString)
+        obj = json.loads(queryDict, object_hook=bson.json_util.object_hook)
         return dict(obj)
-    except:
+    except Exception, err:
+        raise Exception("Query error: " + str(err) + ", Wrong query dict:" + queryDict)
         return {}    
 
 
