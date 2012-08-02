@@ -1,6 +1,28 @@
 import json
 import settings
 
+def instanceDict(instance, key_format=None):
+    "Returns a dictionary containing field names and values for the given instance"
+    from django.db.models.fields.related import ForeignKey
+    if key_format:
+        assert '%s' in key_format, 'key_format must contain a %s'
+    key = lambda key: key_format and key_format % key or key
+
+    d = {}
+    for field in instance._meta.fields:
+        attr = field.name
+        value = getattr(instance, attr)
+        if value is not None and isinstance(field, ForeignKey):
+            value = value._get_pk_val()
+        d[key(attr)] = value
+    for field in instance._meta.many_to_many:
+        d[key(field.name)] = [obj._get_pk_val() for obj in getattr(instance, field.attname).all()]
+    return d
+
+
+
+
+
 def createBaseResponseObject():
     """
     Creates a dict used as a request in json responses.
@@ -56,8 +78,11 @@ def getOffset(request, var_name='offset'):
         return 0
 
 
-def getFormatter(self, var_name='formatter'):
+def getFormatter(request, var_name='formatter'):
     formatter = request.GET.get(var_name) or request.POST.get(var_name)
     return formatter
 
-    
+
+def getMapper(request, var_name='mapper'):
+    mapper = request.GET.get(var_name) or request.POST.get(var_name)
+    return mapper 
