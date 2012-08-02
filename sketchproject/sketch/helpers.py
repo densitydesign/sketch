@@ -55,10 +55,14 @@ def createResponseObjectWithError(error):
 def getQueryDict(request, var_name='query'):
     #TODO: handle a list of dicts        
     queryDict = request.GET.get(var_name) or request.POST.get(var_name)
+    if queryDict == '':
+        return {}
+        
     try:
-        obj = json.loads(jsonString, object_hook=bson.json_util.object_hook)
+        obj = json.loads(queryDict, object_hook=bson.json_util.object_hook)
         return dict(obj)
-    except:
+    except Exception, err:
+        raise Exception("Query error: " + str(err) + ", Wrong query dict:" + queryDict)
         return {}    
 
 
