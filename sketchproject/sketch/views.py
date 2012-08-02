@@ -280,7 +280,7 @@ def importCall(request, collection, database=None):
     View used to import data.
     """
     #this loads an instance of mapper    
-    from mappermanager import mappingManager
+    from mappermanager import mappingManager, codedMappers
 
     #TODO: separate data collection and processing and write a view that handles FILES
     
@@ -299,8 +299,11 @@ def importCall(request, collection, database=None):
         mappingName = getMapper(request)
         #todo: decide to use name or id for referencing mapper in request
         if mappingName:
-            sketchMapper = SketchMapper.objects.get(name=mappingName)
-            mapper = json.loads(sketchMapper.mapper)
+            if mapperName in codedMappers:
+                mapperObject = codedMappers[mapperName]
+            else:
+                sketchMapper = SketchMapper.objects.get(name=mappingName)
+                mapper = sketchMapper.mapper
             
     
         record_errors_number = 0

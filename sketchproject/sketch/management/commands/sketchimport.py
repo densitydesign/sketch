@@ -13,6 +13,8 @@ import sketch.helpers
 import sketch.mongowrapper
 import sketch.recordparser
 import django.contrib.auth.models as authmodels
+import json
+
 
 
 #TODO: replace all print statements with self.stdout.write('...')
@@ -30,6 +32,9 @@ class Command(BaseCommand):
 
         make_option('--format', action='store', dest='format', default='',
         help='Selects format'),
+        
+        make_option('--mapper', action='store', dest='mapper', default='',
+        help='Selects mapper'),
         
         make_option('--datafile', action='store', dest='datafile', default='',
         help='Selects datafile'),
@@ -81,7 +86,7 @@ class Command(BaseCommand):
             return
 
         #TODO: mapper name
-        mapper = None
+        mapper = options['mapper']
         
         commit = options['commit']
 
@@ -103,10 +108,15 @@ class Command(BaseCommand):
         mapperName = mapper
         #todo: decide to use name or id for referencing mapper in request
         if mapperName:
-            sketchMapper = SketchMapper.objects.get(name=mapper)
-            mapperObject = json.loads(sketchMapper.mapper)
+            if mapperName in sketch.mappermanager.codedMappers:
+                mapperObject = sketch.mappermanager.codedMappers[mapperName]
+                
+            else:
+                sketchMapper = sketch.models.SketchMapper.objects.get(name=mapper)
+                mapperObject = sketchMapper.mapper
+                print mapperObject
             
-    
+
         record_errors_number = 0
         ok_records = []
         MAX_ERROR_RECORDS = sketch.settings.MAX_ERROR_RECORDS
@@ -129,8 +139,8 @@ class Command(BaseCommand):
                         newRecord = sketch.mappermanager.mappingManager.mapRecord(d, mapperObject)
                         ok_records.append(newRecord)
                 
-                    except:
-                        out['error_records']['mapper'].append(d)
+                    except Exception, err:
+                        out['error_records']['mapper'].append(str(err))
     
                 #mapper is none, record is imported as it is
                 else:

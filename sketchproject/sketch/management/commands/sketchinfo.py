@@ -63,6 +63,9 @@ class Command(BaseCommand):
             data = []
             for o in objs:
                 data.append(sketch.helpers.instanceDict(o))
+            
+            #todo: be consistent
             print data
+            print  sketch.mappermanager.codedMappers
             
     
