@@ -34,6 +34,13 @@ class MongoWrapper(object):
         collection = getattr(db, collection_name)
         return collection
         
+
+    def dropCollection(self, db_name, collection_name):
+        db = self.getDb(db_name)
+        collection = getattr(db, collection_name)
+        collection.drop()
+        
+        
         
     def _insert(self, db_name, collection_name, document):
     
@@ -110,6 +117,9 @@ class MongoWrapper(object):
             return [collection.find(queryDict).count()]
 
         return [collection.count()]
+        
+    
+        
         
         
     def parseJsonDict(self, jsonString):
