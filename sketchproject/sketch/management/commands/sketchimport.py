@@ -112,9 +112,8 @@ class Command(BaseCommand):
                 mapperObject = sketch.mappermanager.codedMappers[mapperName]
                 
             else:
-                sketchMapper = sketch.models.SketchMapper.objects.get(name=mapper)
+                sketchMapper = sketch.models.SketchMapper.objects.get(name=mapperName)
                 mapperObject = sketchMapper.mapper
-                print mapperObject
             
 
         record_errors_number = 0
@@ -136,7 +135,7 @@ class Command(BaseCommand):
                 #mapping phase
                 if mapper is not None:
                     try:
-                        newRecord = sketch.mappermanager.mappingManager.mapRecord(d, mapperObject)
+                        newRecord = sketch.mappermanager.mappingManager.mapRecord(d, mapperObject,  { '__mapper_name__' : mapperName })
                         ok_records.append(newRecord)
                 
                     except Exception, err:

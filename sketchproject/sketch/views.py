@@ -306,13 +306,13 @@ def importCall(request, collection, database=None):
     if request.POST:
         
         mapper = None
-        mappingName = getMapper(request)
+        mapperName = getMapper(request)
         #todo: decide to use name or id for referencing mapper in request
-        if mappingName:
+        if mapperName:
             if mapperName in codedMappers:
                 mapperObject = codedMappers[mapperName]
             else:
-                sketchMapper = SketchMapper.objects.get(name=mappingName)
+                sketchMapper = SketchMapper.objects.get(name=mapperName)
                 mapper = sketchMapper.mapper
             
     
@@ -335,7 +335,7 @@ def importCall(request, collection, database=None):
                 #mapping phase
                 if mapper is not None:
                     try:
-                        newRecord = mappingManager.mapRecord(d, mapping)
+                        newRecord = mappingManager.mapRecord(d, mapping, { '__mapper_name__' : mapperName })
                         ok_records.append(newRecord)
                 
                     except:

@@ -46,13 +46,15 @@ class RecordMapper(object):
         raise TypeError
         
 
-    def mapRecord(self, record, mapping):
+    def mapRecord(self, record, mapping, constants={}):
         #TODO: is deepcopy necessary/useful?
         newRecord = deepcopy(record)
     
         for key in mapping:
             mappingItem = mapping[key]
             newRecord[key] = self.mapField(newRecord, mappingItem)                
+            
+        newRecord.update(constants)
         return newRecord
         
     def validateMapping(self, mapping):
