@@ -256,6 +256,8 @@ def objects(request, collection, database=None):
             raise Exception("Formatter %s is not available" % formatter)
         if formatter:
             formatter_callback = formattersManager.getFormatter(formatter)
+        else:
+            formatter_callback = None
         
         query_result = mongo.objects(database, collection, query_dict=query_dict, offset=offset, limit=limit, 
                                      formatter_callback=formatter_callback)
