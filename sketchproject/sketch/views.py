@@ -247,10 +247,18 @@ def objects(request, collection, database=None):
         query_dict = getQueryDict(request)
         offset = getOffset(request)
         limit = getLimit(request)
+
         formatter = getFormatter(request)
         
+        from formattersmanager import formattersManager
+        formatters = formattersManager.getFormatters()
+        if formatter and formatter not in formatters:
+            raise Exception("Formatter %s is not available" % formatter)
+        if formatter:
+            formatter_callback = formattersManager.getFormatter(formatter)
+        
         query_result = mongo.objects(database, collection, query_dict=query_dict, offset=offset, limit=limit, 
-                                     formatter=formatter)
+                                     formatter_callback=formatter_callback)
         records = query_result['records']
         has_more = query_result['has_more']
         out['results'] = records

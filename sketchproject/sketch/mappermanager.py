@@ -17,7 +17,7 @@ def geocodeAddress(address):
     return out
     
     
-    
+#todo: this is probably a format, not a transform    
 def GEOJsonFromFourSquareVenue(object):
     loc = object['location']
 

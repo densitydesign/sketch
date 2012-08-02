@@ -64,7 +64,7 @@ class MongoWrapper(object):
         
         
     
-    def objects(self, db_name, collection_name, query_dict={}, offset=0, limit=100, formatter=None):
+    def objects(self, db_name, collection_name, query_dict={}, offset=0, limit=100, formatter_callback=None):
         """
         Performs find on a collection, with offset and limit parameters
         
@@ -75,14 +75,18 @@ class MongoWrapper(object):
         collection = self.getCollection(db_name, collection_name)
         cursor = collection.find(query_dict)
         
-        #TODO: formatter
-
         records = []
         counted = 0
         has_more = False
         
         for r in cursor[offset:]:
             if counted < limit or limit is None:
+                #TODO: what happens if format_callback fails? Now we skip the record
+                if formatter_callback:
+                    try:
+                        r = formatter_callback(r)
+                    except:
+                        continue
                 records.append(r)
                 counted += 1
             else:
