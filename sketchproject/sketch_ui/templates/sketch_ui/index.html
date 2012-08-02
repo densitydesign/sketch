@@ -2,41 +2,40 @@
 
 {% block content %}
 
-    <h1>Sketch user interface :)</h1>
-    <p>Seems like you're logged in as {{ user }}</p>
-    <form method="get" action="/logout/">
-        <input type="submit" name="logout-button" value="Log me out"/>
-    </form>
+    
+    
+    <div id="serverpanel">
+        <h1>Server info</h1>
+        <button class="btn btn-info" id="test-meta-server">Server</button>
+        <button class="btn btn-info" id="test-meta-db">Db</button>
+        <button class="btn btn-info" id="test-meta-parsers">Parsers</button>
+    </div>
     <hr/>
     
-    <button id="test-meta-server">Test server meta info</button>
-    <button id="test-meta-db">Test db meta info</button>
-    <button id="test-meta-parsers">Test parsers meta info</button>
-    <hr/>
-    
-    <button id="test-query">Test query</button><br/>
-    <label>Collection</label><input id="query-collection"/><br/>
-    <label>Command</label><input id="query-command"/><br/>
-    <label>Query</label><textarea  style="width:500px;height:100px;"  id="query-query"></textarea><br/>
-    <hr/>    
-    
-    <button id="test-objects">Test objects</button><br/>
-    <label>Collection</label><input id="objects-collection"/><br/>
-    <label>Query</label><textarea  style="width:500px;height:100px;"  id="objects-query"></textarea><br/>
-    <hr/>    
-    
-    <button id="test-import">Test import</button><br/>
-    <label>Collection</label><input id="import-collection"/><br/>
-    <!-- #todo: radio or select -->
-    <label>Format</label>
-    <select id="import-format">
-        <option value="jsonlist">jsonlist</option>
-        <option value="jsontext">jsontext</option>
-    </select>
-    <br/>
-    <label>Data</label><textarea style="width:500px;height:200px;" id="import-data"></textarea><br/>
-    <br>
-    <label>Commit?</label><input type="checkbox" id="import-commit"/>
+    <div id="querypanel">
+        <h1>Query</h1>
+
+        <label>Collection</label><input id="objects-collection"/><br/>
+        <label>Query</label><textarea  style="width:500px;height:100px;"  id="objects-query"></textarea><br/>
+        <button class="btn" id="test-objects">Get objects</button><br/>   
+    </div>
+    <hr/>     
+    <div id="importpanel">    
+        <h1>Import</h1>
+        
+        <label>Collection</label><input id="import-collection"/><br/>
+        <!-- #todo: radio or select -->
+        <label>Format</label>
+        <select id="import-format">
+            <option value="jsonlist">jsonlist</option>
+            <option value="jsontext">jsontext</option>
+        </select>
+        <br/>
+        <label>Data</label><textarea style="width:500px;height:200px;" id="import-data"></textarea><br/>
+        <br>
+        <label>Commit?</label><input type="checkbox" id="import-commit"/>
+        <button class="btn btn-danger" id="test-import">Test import</button><br/>
+    </div>
     <hr/>    
 
     
@@ -50,6 +49,8 @@
 {% block js_body %}
 
 <script>
+
+    $(document).ready(function(){
 
     var sketch = new sketchjs.Sketch("http://localhost:8000", 'sketchdb');  
     
@@ -178,6 +179,8 @@
 
     
     });
+    
+    });     
 
 
 </script>
