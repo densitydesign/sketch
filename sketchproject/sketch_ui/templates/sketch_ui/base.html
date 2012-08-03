@@ -1,41 +1,66 @@
+{% load bootstrap %}
+
 <!doctype html>
-<html lang="en">
-<head>
+<html>
+    <head>
+        {% bootstrap_css %}
+        <link rel="stylesheet" href="/static/sketch_ui/css/styles.css">
+        
+         <style>
+          body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+          }
+        </style>
+        <title>{% block title %}{% endblock %}</title>
+         <script src="/static/sketch/js/jquery.js"></script>
+        
+    </head>
+    <body>
+        
+        
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Sketch Browser</a>
+          <div class="nav-collapse">
+      
+            {% if user.is_authenticated %}
+            <ul class="nav pull-left">
+              <li data-bind="css: { active: currentPanel()=='serverPanel' }"><a data-bind="click: toServerPanel " href="#serverpanel">Server info</a></li>
+              <li data-bind="css: { active: currentPanel()=='queryPanel' }"><a data-bind="click: toQueryPanel" href="#querypanel">Query</a></li>
+              <li><a href="#importpanel">Import</a></li>
+            </ul>
+            
+            <ul class="nav pull-right">
+                <li><p class="navbar-text">Welcome {{ user }} &nbsp;</p></li>
+              <li>
+                <form class="navbar-form" method="get" action="/logout/">
+                    <input class="btn" type="submit" name="logout-button" value="Log me out"/>
+                </form>
+              </li>
+            </ul>
+            {% endif %}
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
 
-  <meta charset="utf-8">
-  <title>Sketch</title>
+    <div class="container">
 
-  <meta name="description" content="Sketch user interface">
-  <meta name="author" content="DDLab">
+      {% block content %}{% endblock %}
 
-  <!-- stylesheets here -->
-  <!--
-  <link rel="stylesheet" href="css/styles.css?v=1.0">
-  -->
-  <link rel="stylesheet" href="/static/sketch_ui/css/styles.css">
-  <!-- stylesheets end -->
-  
-  <!--[if lt IE 9]>
-  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
-  
-  {% block css_1 %}
-  {% endblock %}
-
-</head>
-
-<body>
-
-  
-  {% block content %}
-  {% endblock %}
-
-  <script src="/static/sketch/js/jquery.js"></script>
-  <script src="/static/sketch/js/sketch.js"></script>
-  
-  {% block js_body %}
-  {% endblock %}
-
-
-</body>
+    </div> <!-- /container -->
+        
+       
+        {% bootstrap_js all %}
+        
+        {% block js_body %}
+        {% endblock %}
+        
+    </body>
 </html>

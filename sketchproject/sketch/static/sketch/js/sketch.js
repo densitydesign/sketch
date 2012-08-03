@@ -3,12 +3,16 @@ var sketchjs = sketchjs || {};
 
 //TODO: use a more robust pattern for object creation
 sketchjs.Sketch = function(url, database){
-
+    var self = this;
     this.url = url;
     if(database){
         this.database = database;
     } else {
         this.database = 'sketchdb';
+    }
+
+    self.setDb = function(dbName){
+        self.database = dbName;
     }
 
     return this;
@@ -35,7 +39,7 @@ sketchjs.Sketch.prototype.login = function(username, pwd, successCallback){
 
 
 
-sketchjs.Sketch.prototype.getServer = function(successCallback){
+sketchjs.Sketch.prototype.getServerInfo = function(successCallback){
 
     var url = this.url + "/sketch/server/";
     
@@ -49,9 +53,11 @@ sketchjs.Sketch.prototype.getServer = function(successCallback){
 };
 
 
-sketchjs.Sketch.prototype.getDb = function(successCallback){
+sketchjs.Sketch.prototype.getDbInfo = function(options, successCallback){
 
-    var url = this.url + "/sketch/db/" + this.database + "/";
+    var db = options.database || this.database;
+
+    var url = this.url + "/sketch/db/" + db + "/";
     
     $.ajax({
         type: 'GET',
@@ -63,7 +69,7 @@ sketchjs.Sketch.prototype.getDb = function(successCallback){
 };
 
 
-sketchjs.Sketch.prototype.getParsers = function(successCallback){
+sketchjs.Sketch.prototype.getParsersInfo = function(successCallback){
 
     var url = this.url + "/sketch/parsers/";
     
@@ -77,7 +83,7 @@ sketchjs.Sketch.prototype.getParsers = function(successCallback){
 };
 
 
-sketchjs.Sketch.prototype.getFormatters = function(successCallback){
+sketchjs.Sketch.prototype.getFormattersInfo = function(successCallback){
 
     var url = this.url + "/sketch/formatters/";
     
@@ -90,7 +96,7 @@ sketchjs.Sketch.prototype.getFormatters = function(successCallback){
     
 };
 
-sketchjs.Sketch.prototype.getMappers = function(successCallback){
+sketchjs.Sketch.prototype.getMappersInfo = function(successCallback){
 
     var url = this.url + "/sketch/mappers/";
     
@@ -104,7 +110,7 @@ sketchjs.Sketch.prototype.getMappers = function(successCallback){
 };
 
 
-sketchjs.Sketch.prototype.getProcessors = function(successCallback){
+sketchjs.Sketch.prototype.getProcessorsInfo = function(successCallback){
 
     var url = this.url + "/sketch/processors/";
     
@@ -138,9 +144,11 @@ sketchjs.Sketch.prototype.query = function(collection, command, data, successCal
 
 
 /* objects function */
-sketchjs.Sketch.prototype.objects = function(collection, data, successCallback){
+sketchjs.Sketch.prototype.objects = function(options, collection, data, successCallback){
 
-    var url = this.url + "/sketch/objects/" + this.database + "/" + collection + "/";
+    var db = options.database || this.database;
+
+    var url = this.url + "/sketch/objects/" + db + "/" + collection + "/";
     console.log("objects", url);
     //#TODO: this should be a GET
     $.ajax({

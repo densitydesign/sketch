@@ -170,6 +170,25 @@ def mappers(request):
 
 
 
+def formatters(request):
+    
+    import formattersmanager
+    formatters = formattersmanager.formattersManager.getFormatters()
+    
+    out = createBaseResponseObject()
+    try:
+        out['results'] = formatters
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
+
+
+
 
 #TODO: handle read permissions, with decorator
 
@@ -247,16 +266,27 @@ def objects(request, collection, database=None):
         query_dict = getQueryDict(request)
         offset = getOffset(request)
         limit = getLimit(request)
+
         formatter = getFormatter(request)
         
+        from formattersmanager import formattersManager
+        formatters = formattersManager.getFormatters()
+        if formatter and formatter not in formatters:
+            raise Exception("Formatter %s is not available" % str(formatter))
+        if formatter:
+            formatter_callback = formattersManager.getFormatter(formatter)
+        else:
+            formatter_callback = None
+        
         query_result = mongo.objects(database, collection, query_dict=query_dict, offset=offset, limit=limit, 
-                                     formatter=formatter)
+                                     formatter_callback=formatter_callback)
         records = query_result['records']
         has_more = query_result['has_more']
         out['results'] = records
         out['has_more'] = has_more
     
     except Exception, e:
+        raise
         out['errors'] = str(e)
         out['status'] = 0
     
@@ -280,7 +310,7 @@ def importCall(request, collection, database=None):
     View used to import data.
     """
     #this loads an instance of mapper    
-    from mappermanager import mappingManager
+    from mappermanager import mappingManager, codedMappers
 
     #TODO: separate data collection and processing and write a view that handles FILES
     
@@ -296,11 +326,14 @@ def importCall(request, collection, database=None):
     if request.POST:
         
         mapper = None
-        mappingName = getMapper(request)
+        mapperName = getMapper(request)
         #todo: decide to use name or id for referencing mapper in request
-        if mappingName:
-            sketchMapper = SketchMapper.objects.get(name=mappingName)
-            mapper = json.loads(sketchMapper.mapper)
+        if mapperName:
+            if mapperName in codedMappers:
+                mapperObject = codedMappers[mapperName]
+            else:
+                sketchMapper = SketchMapper.objects.get(name=mapperName)
+                mapper = sketchMapper.mapper
             
     
         record_errors_number = 0
@@ -322,7 +355,7 @@ def importCall(request, collection, database=None):
                 #mapping phase
                 if mapper is not None:
                     try:
-                        newRecord = mappingManager.mapRecord(d, mapping)
+                        newRecord = mappingManager.mapRecord(d, mapping, { '__mapper_name__' : mapperName })
                         ok_records.append(newRecord)
                 
                     except:
