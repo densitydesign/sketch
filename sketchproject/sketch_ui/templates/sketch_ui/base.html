@@ -31,8 +31,8 @@
       
             {% if user.is_authenticated %}
             <ul class="nav pull-left">
-              <li class="active"><a data-bind="click: toServerPanel " href="#serverpanel">Server info</a></li>
-              <li><a data-bind="click: toQueryPanel" href="#querypanel">Query</a></li>
+              <li data-bind="css: { active: currentPanel()=='serverPanel' }"><a data-bind="click: toServerPanel " href="#serverpanel">Server info</a></li>
+              <li data-bind="css: { active: currentPanel()=='queryPanel' }"><a data-bind="click: toQueryPanel" href="#querypanel">Query</a></li>
               <li><a href="#importpanel">Import</a></li>
             </ul>
             
