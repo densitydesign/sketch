@@ -28,22 +28,23 @@
           </a>
           <a class="brand" href="#">Sketch Browser</a>
           <div class="nav-collapse">
+      
+            {% if user.is_authenticated %}
             <ul class="nav pull-left">
               <li class="active"><a data-bind="click: toServerPanel " href="#serverpanel">Server info</a></li>
               <li><a data-bind="click: toQueryPanel" href="#querypanel">Query</a></li>
               <li><a href="#importpanel">Import</a></li>
             </ul>
+            
             <ul class="nav pull-right">
                 <li><p class="navbar-text">Welcome {{ user }} &nbsp;</p></li>
               <li>
-
                 <form class="navbar-form" method="get" action="/logout/">
                     <input class="btn" type="submit" name="logout-button" value="Log me out"/>
                 </form>
-
-            </li>
-
+              </li>
             </ul>
+            {% endif %}
           </div><!--/.nav-collapse -->
         </div>
       </div>

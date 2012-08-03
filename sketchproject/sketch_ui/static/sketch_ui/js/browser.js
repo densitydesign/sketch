@@ -28,53 +28,6 @@ $(document).ready(function(){
 
     
     
-    $("#test-query").click(function(){
-    
-        var collection = $("#query-collection").val()
-        var command = $("#query-command").val()
-        var query = $("#query-query").val();
-        
-
-        
-        //todo: check args...
-        var data = {query: query};
-        
-        console.log("query:", collection, command, data);
-
-        sketch.query(collection, command, data, function(response){
-            console.log("response", response);
-            $("#console-div").append("query called<br/>");
-            logErrorsAndResults(response)
-        
-        });
-    
-    });
-    
-    
-    $("#test-objects").click(function(){
-    
-        var collection = $("#objects-collection").val()
-        var query = $("#objects-query").val();
-        
-
-        
-        //todo: check args...
-        var data = {query: query};
-        
-        console.log("objects:", collection, data);
-
-        sketch.objects(collection, data, function(response){
-            console.log("response", response);
-            $("#console-div").append("query called<br/>");
-            logErrorsAndResults(response)
-        
-        });
-    
-    });
-
-    
-    
-    
     $("#test-import").click(function(){
     
         var collection = $("#import-collection").val()
@@ -209,57 +162,38 @@ $(document).ready(function(){
         
         self.collectionOptions =  ko.observableArray([]);
         self.currentCollection = ko.observable(null);
-        
-        self.results = ko.observableArray([]);
-        self.query = ko.observable('');
-        
-        
-        self.errors = ko.observableArray();
         self.currentDatabase = ko.observable(self.databases()[0]);
-        
+                
+        self.query = ko.observable('');
+        self.results = ko.observableArray([]);
+        self.errors = ko.observableArray();
+
         self.currentDatabase.subscribe(function(newValue){
             self.collectionOptions(newValue.collections());   
             if(!self.currentCollection()){
                 self.currentCollection(newValue.collections[0]);
-            }
-
-            //self.refresh(); 
-        
+            }        
         });
-        
-        
         
 
         self.refresh = function(){
-            console.log("db", self.currentDatabase());
-            
+        
             var dbName= self.currentDatabase().name;
             var collectionName= self.currentCollection();
             var query = self.query();
             
-            console.log("q", query);
-            
             sketch.objects({ database: dbName}, collectionName, { query: query }, function(response){
                 
-                //self.formatters(response.results);      
-                console.log("query:response", query, response);
                 self.results(response.results);
-                
         
             });
-            
-            
-            console.log("coll", self.currentCollection())
-            //console.log("query", self.query())
-
-        
             
         }
         
     }
      
      
-    
+    //activating knockout
     ko.applyBindings(new InterfaceModel());
     
     
