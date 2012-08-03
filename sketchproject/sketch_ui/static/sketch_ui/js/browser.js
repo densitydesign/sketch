@@ -109,6 +109,16 @@ $(document).ready(function(){
         self.serverPanel = new ServerPanelModel();
         self.queryPanel = new QueryPanelModel(self.serverPanel.databases);
         
+        self.currentPanel = ko.observable('serverPanel');
+        
+        self.toServerPanel = function(){
+            self.currentPanel('serverPanel');
+        }
+        self.toQueryPanel = function(){
+            self.currentPanel('queryPanel');
+        }
+
+        
         self.refreshServer = function(){
             self.serverPanel.refresh();
         }

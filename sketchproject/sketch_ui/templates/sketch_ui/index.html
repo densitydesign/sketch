@@ -4,7 +4,7 @@
 
     
     
-    <div id="serverpanel">
+    <div data-bind="if: currentPanel()=='serverPanel'" id="serverpanel">
         <h1>Server info</h1>
         <!--
         
@@ -88,9 +88,9 @@
         
         
     </div>
-    <hr/>
     
-    <div id="querypanel">
+    
+    <div data-bind="if: currentPanel()=='queryPanel'" id="querypanel">
         <h1>Query</h1>
         <!--
         <label>Collection</label><input id="objects-collection"/><br/>
@@ -128,8 +128,7 @@
     </div>
     
     
-    <hr/>     
-    <div id="importpanel">    
+    <div data-bind="if: currentPanel()=='importPanel'" id="importpanel">    
         <h1>Import</h1>
         
         <label>Collection</label><input id="import-collection"/><br/>
@@ -145,7 +144,6 @@
         <label>Commit?</label><input type="checkbox" id="import-commit"/>
         <button class="btn btn-danger" id="test-import">Test import</button><br/>
     </div>
-    <hr/>    
 
     
     
