@@ -6,19 +6,128 @@
     
     <div id="serverpanel">
         <h1>Server info</h1>
-        <button class="btn btn-info" id="test-meta-server">Server</button>
+        <!--
+        
         <button class="btn btn-info" id="test-meta-db">Db</button>
         <button class="btn btn-info" id="test-meta-parsers">Parsers</button>
+        -->
+        
+        
+        <div data-bind="with: serverPanel">
+            <h2>Databases</h2>
+            <table class="table table-striped table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Collections</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: databases">
+                <tr>
+                    <td data-bind="text: name"></td>
+                    <td>
+                        <div data-bind="foreach: collections">
+                            <span class="label label-info" data-bind="text: $data"></span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            </table>
+            
+            <h2>Sketch capabilities</h2>
+            <table class="table table-striped table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Available objects</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Parsers</td>
+                    <td>
+                        <div data-bind="foreach: parsers">
+                            <span class="label label-info" data-bind="text: $data"></span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Mappers</td>
+                    <td>
+                        <div data-bind="foreach: mappers">
+                            <span class="label label-info" data-bind="text: name"></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Formatters</td>
+                    <td>
+                        <div data-bind="foreach: formatters">
+                            <span class="label label-info" data-bind="text: $data"></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Processors</td>
+                    <td>
+                        <div data-bind="foreach: processors">
+                            <span class="label label-info" data-bind="text: $data"></span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            </table>
+            
+            
+        <button class="btn btn-info" data-bind="click: refresh">Refresh server info</button>
+        </div>
+        
+        
+        
+        
+        
     </div>
     <hr/>
     
     <div id="querypanel">
         <h1>Query</h1>
-
+        <!--
         <label>Collection</label><input id="objects-collection"/><br/>
         <label>Query</label><textarea  style="width:500px;height:100px;"  id="objects-query"></textarea><br/>
         <button class="btn" id="test-objects">Get objects</button><br/>   
+        -->
+        <div data-bind="with: queryPanel">
+        <form class="form form-vertical">
+            <label>Database</label>
+            <select data-bind="selectValue:currentDatabase(), options: databases(), optionsText: 'name', value: currentDatabase "></select>
+            <label>Collection</label>
+            <select data-bind="selectValue: currentCollection(), options: collectionOptions(), value: currentCollection"></select>
+            <label>Query</label>
+            <textarea data-bind="value: query"></textarea>
+            <label></label>
+            <input class="btn" data-bind="click: refresh" value="Get objects"/>   
+        </form>
+        
+        <table class="table table-striped table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Object</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: results">
+                <tr>
+                    <td data-bind="text: _id"></td>
+                    <td data-bind="text: JSON.stringify($data, null, '&nbsp;&nbsp;')"></td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        
     </div>
+    
+    
     <hr/>     
     <div id="importpanel">    
         <h1>Import</h1>

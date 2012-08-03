@@ -22,40 +22,9 @@ $(document).ready(function(){
     
     
 
-    $("#test-meta-server").click(function(){
-
-        sketch.getServer(function(response){
-        
-            $("#console-div").append("getServer called<br/>");
-            logErrorsAndResults(response);
-        
-        });
+  
     
-    });
-    
-    
-    $("#test-meta-db").click(function(){
-
-        sketch.getDb(function(response){
-        
-            $("#console-div").append("getDb called<br/>");
-            logErrorsAndResults(response)
-        
-        });
-    
-    });
-    
-    $("#test-meta-parsers").click(function(){
-
-        sketch.getParsers(function(response){
-        
-            $("#console-div").append("getParsers called<br/>");
-            logErrorsAndResults(response);
-        
-        });
-    
-    });
-    
+   
 
     
     
@@ -127,5 +96,162 @@ $(document).ready(function(){
 
     
     });
+    
+    
+    
+    
+    
+    
+    
+    
+    var InterfaceModel = function(){
+        var self = this;
+        self.serverPanel = new ServerPanelModel();
+        self.queryPanel = new QueryPanelModel(self.serverPanel.databases);
+        
+        self.refreshServer = function(){
+            self.serverPanel.refresh();
+        }
+        
+    }
+    
+    
+    
+    var DbModel=function(name){
+        var self = this;
+        self.name = name;
+        self.collections = ko.observable([]);
+        
+        self.refresh = function(){
+            sketch.getDbInfo({ database: self.name}, function(response){
+                self.collections(response.results);
+            
+            });
+            
+        }
+        
+        
+        self.refresh();
+        
+    }
+    
+    
+    var ServerPanelModel = function(){
+
+        var self = this;
+        self.databases = ko.observableArray([]);
+        self.mappers = ko.observableArray([]);
+        self.parsers = ko.observableArray([]);
+        self.formatters = ko.observableArray([]);
+        self.processors = ko.observableArray([]);
+        
+        self.errors = ko.observableArray();
+        self.currentDatabase = ko.observable(null);
+
+        self.refresh = function(){
+        
+            sketch.getServerInfo(function(response){
+        
+                self.databases([]);
+                for(var i=0,n=response.results.length;i<n;i++){
+                    self.databases.push(new DbModel(response.results[i]));
+                }
+                
+                self.errors(response.errors);
+            });        
+            
+            sketch.getMappersInfo(function(response){
+            
+                self.mappers(response.results);
+        
+            });
+            
+            sketch.getParsersInfo(function(response){
+        
+                self.parsers(response.results);      
+        
+            });
+            
+            sketch.getFormattersInfo(function(response){
+        
+                self.formatters(response.results);      
+        
+            });
+            
+            sketch.getProcessorsInfo(function(response){
+        
+                self.processors(response.results);      
+        
+            });
+            
+        }
+        
+        self.refresh();
+        
+    }
+     
+    
+    
+    var QueryPanelModel = function(databases){
+
+        var self = this;
+        self.databases = databases;
+        
+        self.collectionOptions =  ko.observableArray([]);
+        self.currentCollection = ko.observable(null);
+        
+        self.results = ko.observableArray([]);
+        self.query = ko.observable('');
+        
+        
+        self.errors = ko.observableArray();
+        self.currentDatabase = ko.observable(self.databases()[0]);
+        
+        self.currentDatabase.subscribe(function(newValue){
+            self.collectionOptions(newValue.collections());   
+            if(!self.currentCollection()){
+                self.currentCollection(newValue.collections[0]);
+            }
+
+            //self.refresh(); 
+        
+        });
+        
+        
+        
+
+        self.refresh = function(){
+            console.log("db", self.currentDatabase());
+            
+            var dbName= self.currentDatabase().name;
+            var collectionName= self.currentCollection();
+            var query = self.query();
+            
+            console.log("q", query);
+            
+            sketch.objects({ database: dbName}, collectionName, { query: query }, function(response){
+                
+                //self.formatters(response.results);      
+                console.log("query:response", query, response);
+                self.results(response.results);
+                
+        
+            });
+            
+            
+            console.log("coll", self.currentCollection())
+            //console.log("query", self.query())
+
+        
+            
+        }
+        
+    }
+     
+     
+    
+    ko.applyBindings(new InterfaceModel());
+    
+    
     
 });     

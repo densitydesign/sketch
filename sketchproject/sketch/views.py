@@ -170,6 +170,25 @@ def mappers(request):
 
 
 
+def formatters(request):
+    
+    import formattersmanager
+    formatters = formattersmanager.formattersManager.getFormatters()
+    
+    out = createBaseResponseObject()
+    try:
+        out['results'] = formatters
+    
+    except Exception, e:
+        out['errors'] = str(e)
+        out['status'] = 0
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
+
+
+
+
 
 #TODO: handle read permissions, with decorator
 
@@ -253,7 +272,7 @@ def objects(request, collection, database=None):
         from formattersmanager import formattersManager
         formatters = formattersManager.getFormatters()
         if formatter and formatter not in formatters:
-            raise Exception("Formatter %s is not available" % formatter)
+            raise Exception("Formatter %s is not available" % str(formatter))
         if formatter:
             formatter_callback = formattersManager.getFormatter(formatter)
         else:
@@ -267,6 +286,7 @@ def objects(request, collection, database=None):
         out['has_more'] = has_more
     
     except Exception, e:
+        raise
         out['errors'] = str(e)
         out['status'] = 0
     

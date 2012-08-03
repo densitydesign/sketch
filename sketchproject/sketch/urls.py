@@ -26,6 +26,7 @@ urlpatterns = patterns('sketch.views',
     url(r'mappers/$', 'mappers'), 
     url(r'transforms/$', 'transforms'),
     url(r'processors/$', 'processors'), 
+    url(r'formatters/$', 'formatters'), 
 
     #ajax login view.
     url(r'ajaxlogin/$', 'ajaxLogin')
