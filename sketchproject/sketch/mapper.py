@@ -6,7 +6,6 @@ class RecordMapper(object):
     def __init__(self):
         self.transformFunctions = {}
         
-        
     def registerTransform(self, function):
         """
         register a transform function. 
@@ -24,6 +23,8 @@ class RecordMapper(object):
         mappingItemType = type(mappingItem)
 
         if mappingItemType is str:
+            if mappingItem == "__self__":
+                return record
             return record[mappingItem]
             
         if mappingItemType is dict:
@@ -45,13 +46,15 @@ class RecordMapper(object):
         raise TypeError
         
 
-    def mapRecord(self, record, mapping):
+    def mapRecord(self, record, mapping, constants={}):
         #TODO: is deepcopy necessary/useful?
         newRecord = deepcopy(record)
     
         for key in mapping:
             mappingItem = mapping[key]
             newRecord[key] = self.mapField(newRecord, mappingItem)                
+            
+        newRecord.update(constants)
         return newRecord
         
     def validateMapping(self, mapping):

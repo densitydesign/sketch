@@ -9,6 +9,7 @@ import sketch.settings
 import sketch.recordparser
 import sketch.mappermanager
 import sketch.processingmanager
+import sketch.formattersmanager
 import sketch.helpers
 
 
@@ -56,13 +57,19 @@ class Command(BaseCommand):
         if 'processors' in args:
             data = sketch.processingmanager.processingManager.getProcessors()
             print data
-            
+        
+        if 'formatters' in args:
+            data = sketch.formattersmanager.formattersManager.getFormatters()
+            print data
             
         if 'mappers' in args:
             objs = sketch.models.SketchMapper.objects.all()
             data = []
             for o in objs:
                 data.append(sketch.helpers.instanceDict(o))
+            
+            #todo: be consistent
             print data
+            print  sketch.mappermanager.codedMappers
             
     

@@ -9,6 +9,7 @@ import sketch.settings
 import sketch.recordparser
 import sketch.mappermanager
 import sketch.processingmanager
+import sketch.formattersmanager
 import sketch.helpers
 import sketch.mongowrapper
 import json
@@ -29,8 +30,11 @@ class Command(BaseCommand):
         make_option('--limit', action='store', dest='limit', default='',
         help='Limit'),
         
-         make_option('--offset', action='store', dest='offset', default='',
+        make_option('--offset', action='store', dest='offset', default='',
         help='Offset'),
+        
+        make_option('--formatter', action='store', dest='formatter', default='',
+        help='Formatter'),
 
         make_option('--collection', action='store', dest='collection', default='',
         help='Selects collection'),
@@ -55,7 +59,16 @@ class Command(BaseCommand):
             return
 
         #TODO: formatter           
-        formatter = None
+        formatter = options['formatter']
+        formatters = sketch.formattersmanager.formattersManager.getFormatters()
+        if formatter and formatter not in formatters:
+            print "Formatter %s is not available" % formatter
+            return
+        if formatter:
+            formatter_callback = sketch.formattersmanager.formattersManager.getFormatter(formatter)
+        else:
+            formatter_callback = None
+        
         
         query = options['query']
         if query:
@@ -96,7 +109,7 @@ class Command(BaseCommand):
             
             
             query_result = mongo.objects(database, collection, query_dict=query_dict, offset=offset, limit=limit, 
-                                         formatter=formatter)
+                                         formatter_callback=formatter_callback)
              
             out.update(query_result)
         

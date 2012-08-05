@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     
     #json field 
     'json_field',
+    'bootstrapped',
 
     #our apps
     'sketch',

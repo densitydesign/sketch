@@ -2,42 +2,148 @@
 
 {% block content %}
 
-    <h1>Sketch user interface :)</h1>
-    <p>Seems like you're logged in as {{ user }}</p>
-    <form method="get" action="/logout/">
-        <input type="submit" name="logout-button" value="Log me out"/>
-    </form>
-    <hr/>
     
-    <button id="test-meta-server">Test server meta info</button>
-    <button id="test-meta-db">Test db meta info</button>
-    <button id="test-meta-parsers">Test parsers meta info</button>
-    <hr/>
     
-    <button id="test-query">Test query</button><br/>
-    <label>Collection</label><input id="query-collection"/><br/>
-    <label>Command</label><input id="query-command"/><br/>
-    <label>Query</label><textarea  style="width:500px;height:100px;"  id="query-query"></textarea><br/>
-    <hr/>    
+    <div data-bind="if: currentPanel()=='serverPanel'" id="serverpanel">
+        <h1>Server info</h1>
+        <!--
+        
+        <button class="btn btn-info" id="test-meta-db">Db</button>
+        <button class="btn btn-info" id="test-meta-parsers">Parsers</button>
+        -->
+        
+        
+        <div data-bind="with: serverPanel">
+            <h2>Databases</h2>
+            <table class="table table-striped table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Collections</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: databases">
+                <tr>
+                    <td data-bind="text: name"></td>
+                    <td>
+                        <div data-bind="foreach: collections">
+                            <span class="label label-info" data-bind="text: $data"></span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            </table>
+            
+            <h2>Sketch capabilities</h2>
+            <table class="table table-striped table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Available objects</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Parsers</td>
+                    <td>
+                        <div data-bind="foreach: parsers">
+                            <span class="label label-info" data-bind="text: $data"></span>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Mappers</td>
+                    <td>
+                        <div data-bind="foreach: mappers">
+                            <span class="label label-info" data-bind="text: name"></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Formatters</td>
+                    <td>
+                        <div data-bind="foreach: formatters">
+                            <span class="label label-info" data-bind="text: $data"></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Processors</td>
+                    <td>
+                        <div data-bind="foreach: processors">
+                            <span class="label label-info" data-bind="text: $data"></span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            </table>
+            
+            
+        <button class="btn btn-info" data-bind="click: refresh">Refresh server info</button>
+        </div>
+        
+        
+        
+        
+        
+    </div>
     
-    <button id="test-objects">Test objects</button><br/>
-    <label>Collection</label><input id="objects-collection"/><br/>
-    <label>Query</label><textarea  style="width:500px;height:100px;"  id="objects-query"></textarea><br/>
-    <hr/>    
     
-    <button id="test-import">Test import</button><br/>
-    <label>Collection</label><input id="import-collection"/><br/>
-    <!-- #todo: radio or select -->
-    <label>Format</label>
-    <select id="import-format">
-        <option value="jsonlist">jsonlist</option>
-        <option value="jsontext">jsontext</option>
-    </select>
-    <br/>
-    <label>Data</label><textarea style="width:500px;height:200px;" id="import-data"></textarea><br/>
-    <br>
-    <label>Commit?</label><input type="checkbox" id="import-commit"/>
-    <hr/>    
+    <div data-bind="if: currentPanel()=='queryPanel'" id="querypanel">
+        <h1>Query</h1>
+        <!--
+        <label>Collection</label><input id="objects-collection"/><br/>
+        <label>Query</label><textarea  style="width:500px;height:100px;"  id="objects-query"></textarea><br/>
+        <button class="btn" id="test-objects">Get objects</button><br/>   
+        -->
+        <div data-bind="with: queryPanel">
+        <form class="form form-vertical">
+            <label>Database</label>
+            <select data-bind="selectValue:currentDatabase(), options: databases(), optionsText: 'name', value: currentDatabase "></select>
+            <label>Collection</label>
+            <select data-bind="selectValue: currentCollection(), options: collectionOptions(), value: currentCollection"></select>
+            <label>Query</label>
+            <textarea data-bind="value: query"></textarea>
+            <label></label>
+            <input class="btn" data-bind="click: refresh" value="Get objects"/>   
+        </form>
+        
+        <table class="table table-striped table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Object</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: results">
+                <tr>
+                    <td data-bind="text: JSON.stringify(_id, null, '&nbsp;&nbsp;')"></td>
+                    <td data-bind="text: JSON.stringify($data, null, '&nbsp;&nbsp;')"></td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        
+    </div>
+    
+    
+    <div data-bind="if: currentPanel()=='importPanel'" id="importpanel">    
+        <h1>Import</h1>
+        
+        <label>Collection</label><input id="import-collection"/><br/>
+        <!-- #todo: radio or select -->
+        <label>Format</label>
+        <select id="import-format">
+            <option value="jsonlist">jsonlist</option>
+            <option value="jsontext">jsontext</option>
+        </select>
+        <br/>
+        <label>Data</label><textarea style="width:500px;height:200px;" id="import-data"></textarea><br/>
+        <br>
+        <label>Commit?</label><input type="checkbox" id="import-commit"/>
+        <button class="btn btn-danger" id="test-import">Test import</button><br/>
+    </div>
 
     
     
@@ -49,136 +155,14 @@
 <!-- this block contains javascript inside html body -->
 {% block js_body %}
 
+    <script src="/static/sketch/js/sketch.js"></script>
+    <script src="/static/sketch_ui/js/lib/jquery.tmpl.min.js"></script>
+    <script src="/static/sketch_ui/js/lib/knockout-2.1.0.js"></script>
+    <script src="/static/sketch_ui/js/browser.js"></script>
+
 <script>
 
-    var sketch = new sketchjs.Sketch("http://localhost:8000", 'sketchdb');  
     
-    //Helper function to log errors and results to our console div
-    
-    function logErrorsAndResults(response){
-        var errors = response.errors;
-        var results = response.results;
-        if(results && results.length){
-            $("#console-div").append("results:<br/>");
-            var l = results.length;
-            for(var i=0;i<l;i++){
-                result = results[i];
-                $("#console-div").append(JSON.stringify(result, null, 1) + "<br/>");
-            }
-        }
-        
-        $("#console-div").append("errors:" + errors + "<br/>");
-
-    }
-    
-    
-
-    $("#test-meta-server").click(function(){
-
-        sketch.getServer(function(response){
-        
-            $("#console-div").append("getServer called<br/>");
-            logErrorsAndResults(response);
-        
-        });
-    
-    });
-    
-    
-    $("#test-meta-db").click(function(){
-
-        sketch.getDb(function(response){
-        
-            $("#console-div").append("getDb called<br/>");
-            logErrorsAndResults(response)
-        
-        });
-    
-    });
-    
-    $("#test-meta-parsers").click(function(){
-
-        sketch.getParsers(function(response){
-        
-            $("#console-div").append("getParsers called<br/>");
-            logErrorsAndResults(response);
-        
-        });
-    
-    });
-    
-
-    
-    
-    $("#test-query").click(function(){
-    
-        var collection = $("#query-collection").val()
-        var command = $("#query-command").val()
-        var query = $("#query-query").val();
-        
-
-        
-        //todo: check args...
-        var data = {query: query};
-        
-        console.log("query:", collection, command, data);
-
-        sketch.query(collection, command, data, function(response){
-            console.log("response", response);
-            $("#console-div").append("query called<br/>");
-            logErrorsAndResults(response)
-        
-        });
-    
-    });
-    
-    
-    $("#test-objects").click(function(){
-    
-        var collection = $("#objects-collection").val()
-        var query = $("#objects-query").val();
-        
-
-        
-        //todo: check args...
-        var data = {query: query};
-        
-        console.log("objects:", collection, data);
-
-        sketch.objects(collection, data, function(response){
-            console.log("response", response);
-            $("#console-div").append("query called<br/>");
-            logErrorsAndResults(response)
-        
-        });
-    
-    });
-
-    
-    
-    
-    $("#test-import").click(function(){
-    
-        var collection = $("#import-collection").val()
-        var format = $("#import-format").val()
-        var data = $("#import-data").val();
-        var commit = $("#import-commit").attr('checked');
-        commit = Boolean(commit);
-        
-        console.log("import:", collection, format, data, commit);
-        
-        //todo: check args...
-
-        sketch.import(collection, format, data, commit, function(response){
-            console.log("response", response);
-            $("#console-div").append("import called<br/>");
-            logErrorsAndResults(response)
-        
-        });
-
-    
-    });
-
 
 </script>
 
