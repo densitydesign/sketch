@@ -66,15 +66,17 @@ $(document).ready(function(){
         
         self.toServerPanel = function(){
             self.currentPanel('serverPanel');
-        }
+        };
         self.toQueryPanel = function(){
             self.currentPanel('queryPanel');
-        }
-
+        };
+        self.toImportPanel = function(){
+            self.currentPanel('importPanel');
+        };
         
         self.refreshServer = function(){
             self.serverPanel.refresh();
-        }
+        };
         
     }
     

@@ -33,7 +33,7 @@
             <ul class="nav pull-left">
               <li data-bind="css: { active: currentPanel()=='serverPanel' }"><a data-bind="click: toServerPanel " href="#serverpanel">Server info</a></li>
               <li data-bind="css: { active: currentPanel()=='queryPanel' }"><a data-bind="click: toQueryPanel" href="#querypanel">Query</a></li>
-              <li><a href="#importpanel">Import</a></li>
+              <li data-bind="css: { active: currentPanel()=='importPanel' }"><a data-bind="click: toImportPanel" href="#querypanel">Import</a></li>
             </ul>
             
             <ul class="nav pull-right">
