@@ -299,6 +299,29 @@ def objects(request, collection, database=None):
 
 
 
+#TODO: this must be completed
+@decorators.login_required
+@decorators.can_write_collection
+def object(request, collection, oid, database=None):
+    database = database or settings.MONGO_SERVER_DEFAULT_DB
+    
+    out = createBaseResponseObject()
+
+    mongo = MongoWrapper()
+    mongo.connect()
+    
+    if request.DELETE:
+        mongo.dropObjectByOid(database, collection, oid)
+        out['results'].append(oid)
+ 
+    try:
+        mongo.connection.close()
+    except:
+        pass
+        
+        
+    return HttpResponse(json.dumps(out, default=bson.json_util.default))
+
 
 
 @decorators.login_required

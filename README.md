@@ -74,7 +74,6 @@ And navigate to
 You should get the login page for Sketch Browser, shipped with the sketch_ui django application.
 
 
-
 ## Design
 
 TBW
@@ -103,6 +102,15 @@ TBW
 ### Processors
 
 TBW
+
+## Management commands
+
+### Importing data
+
+Data can be imported from command line with the **sketchimport** management command.
+TODO: explain syntax
+
+
 
 
 ## Javascript API

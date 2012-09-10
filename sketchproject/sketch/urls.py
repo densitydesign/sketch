@@ -19,7 +19,6 @@ urlpatterns = patterns('sketch.views',
     # These view describe the state of a particular sketch instance,
     # showing available resources in terms of databases, collections, parsers, mappers,
     # transforms, processors
-    
     url(r'server/$', 'server'),
     url(r'db/(?P<database>\w+)/$', 'db'),
     url(r'parsers/$', 'parsers'),
@@ -29,8 +28,10 @@ urlpatterns = patterns('sketch.views',
     url(r'formatters/$', 'formatters'), 
 
     #ajax login view.
-    url(r'ajaxlogin/$', 'ajaxLogin')
-
+    url(r'ajaxlogin/$', 'ajaxLogin'),
     
+    #single object views
+    url(r'object/(?P<collection>\w+)/(?P<oid>\w+)/$', 'object'),
+    url(r'object/(?P<database>\w+)/(?P<collection>\w+)/(?P<oid>\w+)/$', 'object'),
     
 )

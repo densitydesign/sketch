@@ -167,10 +167,11 @@ sketchjs.Sketch.prototype.objects = function(options, collection, data, successC
 
 /* import function */
 //TODO: add mapping
-sketchjs.Sketch.prototype.import = function(collection, format, data, commit, successCallback){
+sketchjs.Sketch.prototype.import = function(options, collection, format, data, commit, successCallback){
 
-    var url = this.url + "/sketch/import/" + this.database + "/" + collection + "/";
-    console.log("query", url);
+    var db = options.database || this.database;
+
+    var url = this.url + "/sketch/import/" + db + "/" + collection + "/";
     var commitInteger = 0;
     if(Boolean(commit)){
         commitInteger = 1;
