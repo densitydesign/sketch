@@ -129,20 +129,29 @@
     
     
     <div data-bind="if: currentPanel()=='importPanel'" id="importpanel">    
-        <h1>Import</h1>
-        
-        <label>Collection</label><input id="import-collection"/><br/>
-        <!-- #todo: radio or select -->
-        <label>Format</label>
-        <select id="import-format">
-            <option value="jsonlist">jsonlist</option>
-            <option value="jsontext">jsontext</option>
-        </select>
-        <br/>
-        <label>Data</label><textarea style="width:500px;height:200px;" id="import-data"></textarea><br/>
-        <br>
-        <label>Commit?</label><input type="checkbox" id="import-commit"/>
-        <button class="btn btn-danger" id="test-import">Test import</button><br/>
+        <div data-bind="with: importPanel">
+            <h1>Import</h1>
+            <label>Database</label>
+            <select data-bind="selectValue:currentDatabase(), options: databases(), optionsText: 'name', value: currentDatabase "></select>
+            <label>Collection</label>
+            <input data-bind="value: collection"/><br/>
+            <!-- #todo: this should be dynamic -->
+            <label>Format</label>
+            <select data-bind="options: parsers, value:parser"></select>
+            <br/>
+            <label>Data</label><textarea style="width:500px;height:200px;" data-bind="value: data"></textarea><br/>
+            <br>
+            <label>Commit?</label>
+            <input type="checkbox" data-bind="checked: commit"/>
+            <button class="btn btn-danger" data-bind="click:launchimport">Test import</button><br/>
+            
+            <div data-bind="text: results">
+            </div>
+            <div data-bind="text: errors">
+            </div>
+            
+            
+        </div>
     </div>
 
     
