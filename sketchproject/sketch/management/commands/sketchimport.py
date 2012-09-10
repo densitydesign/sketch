@@ -133,7 +133,7 @@ class Command(BaseCommand):
                     continue
                 
                 #mapping phase
-                if mapper is not None:
+                if mapper:
                     try:
                         newRecord = sketch.mappermanager.mappingManager.mapRecord(d, mapperObject,  { '__mapper_name__' : mapperName })
                         ok_records.append(newRecord)
