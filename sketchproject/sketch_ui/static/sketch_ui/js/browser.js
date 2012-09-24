@@ -18,42 +18,7 @@ $(document).ready(function(){
         
         $("#console-div").append("errors:" + errors + "<br/>");
 
-    }
-    
-    
-
-  
-    
-   
-
-    
-    
-    $("#test-import").click(function(){
-    
-        var collection = $("#import-collection").val()
-        var format = $("#import-format").val()
-        var data = $("#import-data").val();
-        var commit = $("#import-commit").attr('checked');
-        commit = Boolean(commit);
-        
-        console.log("import:", collection, format, data, commit);
-        
-        //todo: check args...
-
-        sketch.import(collection, format, data, commit, function(response){
-            console.log("response", response);
-            $("#console-div").append("import called<br/>");
-            logErrorsAndResults(response)
-        
-        });
-
-    
-    });
-    
-    
-    
-    
-    
+    };
     
     
     
@@ -61,20 +26,23 @@ $(document).ready(function(){
         var self = this;
         self.serverPanel = new ServerPanelModel();
         self.queryPanel = new QueryPanelModel(self.serverPanel.databases);
+        self.importPanel = new ImportPanelModel(self.serverPanel.databases, self.serverPanel.parsers);
         
         self.currentPanel = ko.observable('serverPanel');
         
         self.toServerPanel = function(){
             self.currentPanel('serverPanel');
-        }
+        };
         self.toQueryPanel = function(){
             self.currentPanel('queryPanel');
-        }
-
+        };
+        self.toImportPanel = function(){
+            self.currentPanel('importPanel');
+        };
         
         self.refreshServer = function(){
             self.serverPanel.refresh();
-        }
+        };
         
     }
     
@@ -190,7 +158,43 @@ $(document).ready(function(){
             
         }
         
-    }
+    };
+    
+    
+    var ImportPanelModel = function(databases, parsers){
+    
+        var self = this;
+        self.databases = databases;
+        self.parsers = parsers;
+        self.currentDatabase = ko.observable(self.databases()[0]);
+        
+        self.parser = ko.observable(self.parsers()[0]);
+        self.collection = ko.observable('');
+
+        self.data = ko.observable('');        
+        self.results = ko.observable('');
+        self.errors = ko.observable('');
+        self.commit = ko.observable(false);
+        
+        
+        self.launchimport = function(){
+            var commit = self.commit();
+            var database = self.currentDatabase().name;
+            var collection = self.collection();
+            var parser = self.parser();
+            var data = self.data();
+            sketch.import({ database: database }, collection, parser, data, commit, function(response){
+                console.log("eee", response);
+                self.results(JSON.stringify(response.results));
+                self.errors(response.errors);
+        
+            });
+        
+        }
+        
+        
+        
+    };
      
      
     //activating knockout

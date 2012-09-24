@@ -39,7 +39,19 @@ class MongoWrapper(object):
         db = self.getDb(db_name)
         collection = getattr(db, collection_name)
         collection.drop()
-        
+    
+    
+    def dropObjects(self, db_name, collection_name, specs):
+        if specs:
+            db = self.getDb(db_name)
+            collection = getattr(db, collection_name)
+            collection.remove(specs, True)
+            
+    def dropObjectByOid(self, db_name, collection_name, oid):
+        if specs:
+            db = self.getDb(db_name)
+            collection = getattr(db, collection_name)
+            collection.remove({"_id" : pymongo.ObjectId(oid)}, True)
         
         
     def _insert(self, db_name, collection_name, document):
