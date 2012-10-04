@@ -87,7 +87,8 @@ def getDbInfo(database):
         
         database_object = mongo.getDb(database)
         existing_collections = database_object.collection_names()
-
+        #filtering out "system.indexes" collection
+        existing_collections = [x for x in existing_collections if x != "system.indexes"]
         out['results'] = existing_collections
     
     except Exception, e:
