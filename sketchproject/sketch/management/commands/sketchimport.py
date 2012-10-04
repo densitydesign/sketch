@@ -30,8 +30,8 @@ class Command(BaseCommand):
         make_option('--collection', action='store', dest='collection', default='',
         help='Selects collection'),
 
-        make_option('--format', action='store', dest='format', default='',
-        help='Selects format'),
+        make_option('--parser', action='store', dest='parser', default='',
+        help='Selects parser'),
         
         make_option('--mapper', action='store', dest='mapper', default='',
         help='Selects mapper'),
@@ -77,12 +77,12 @@ class Command(BaseCommand):
             print "Collection must be specified with --collection"
             return
             
-        parser_class = options['format']
+        parser_class = options['parser']
         if not parser_class:
-            print "Format must be specified with --format"
+            print "Parser must be specified with --parser"
             return
         if parser_class not in sketch.recordparser.ALLOWED_PARSERS.keys():
-            print "Unrecognized import format: --format must be one of:\n" + "\n".join(sketch.recordparser.ALLOWED_PARSERS.keys())
+            print "Unrecognized import parser: --parser must be one of:\n" + "\n".join(sketch.recordparser.ALLOWED_PARSERS.keys())
             return
 
         #TODO: mapper name

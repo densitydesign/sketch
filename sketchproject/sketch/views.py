@@ -364,61 +364,61 @@ def importCall(request, collection, database=None):
         ok_records = []
         MAX_ERROR_RECORDS = settings.MAX_ERROR_RECORDS
     
-        if 'data' in request.POST and 'format' in request.POST:
-            format = request.POST['format'].lower()
+        if 'data' in request.POST and 'parser' in request.POST:
+            parser_name = request.POST['parser'].lower()
             data = request.POST['data']
             
-        try:
-            #parsing phase
-            parser = recordparser.parserFactory(format, data)
-            for d in parser.objects():
-                if d is recordparser.ParserError:
-                    out['error_records']['parser'].append(str(d.exception_message) + ":" +d.raw_data)
-                    continue
-                
-                #mapping phase
-                if mapper is not None:
-                    try:
-                        newRecord = mappingManager.mapRecord(d, mapping, { '__mapper_name__' : mapperName })
-                        ok_records.append(newRecord)
-                
-                    except:
-                        out['error_records']['mapper'].append(d)
-
-                #mapper is none, record is imported as it is
-                else:
-                    ok_records.append(d)
-                
-                if len(out['error_records']['mapper']) + len(out['error_records']['parser']) > MAX_ERROR_RECORDS:
-                    break
+            try:
+                #parsing phase
+                parser = recordparser.parserFactory(parser_name, data)
+                for d in parser.objects():
+                    if d is recordparser.ParserError:
+                        out['error_records']['parser'].append(str(d.exception_message) + ":" +d.raw_data)
+                        continue
                     
-
-            #commit phase
-            if 'commit' in request.POST and request.POST['commit']:
-                try:
-                    commit = int(request.POST['commit'])
-                except:
-                    commit = 0
+                    #mapping phase
+                    if mapper is not None:
+                        try:
+                            newRecord = mappingManager.mapRecord(d, mapping, { '__mapper_name__' : mapperName })
+                            ok_records.append(newRecord)
                     
-                if commit:
-                    #creating the collection model and set owner=user if collection does not exits
-                    #TODO: we could check again the number of allowed collections here, as in decorator
-                    try:
-                        collectionInstance = SketchCollection.objects.get(name=collection, database=database)
-                    except:
-                        collectionInstance = SketchCollection(owner=request.user, name=collection, database=database)
-                        collectionInstance.save()
-
-                    #finally inserting records
-                    for record in ok_records:
-                        mongo_id = mongo._insert(database, collection, record)
-                        out['results'].append(mongo_id)
+                        except:
+                            out['error_records']['mapper'].append(d)
+    
+                    #mapper is none, record is imported as it is
+                    else:
+                        ok_records.append(d)
+                    
+                    if len(out['error_records']['mapper']) + len(out['error_records']['parser']) > MAX_ERROR_RECORDS:
+                        break
                         
-        except Exception, e:
-            out['errors'] = str(e)
-            out['status'] = 0
-             
-        out['ok_records_number'] = len(ok_records)
+    
+                #commit phase
+                if 'commit' in request.POST and request.POST['commit']:
+                    try:
+                        commit = int(request.POST['commit'])
+                    except:
+                        commit = 0
+                        
+                    if commit:
+                        #creating the collection model and set owner=user if collection does not exits
+                        #TODO: we could check again the number of allowed collections here, as in decorator
+                        try:
+                            collectionInstance = SketchCollection.objects.get(name=collection, database=database)
+                        except:
+                            collectionInstance = SketchCollection(owner=request.user, name=collection, database=database)
+                            collectionInstance.save()
+    
+                        #finally inserting records
+                        for record in ok_records:
+                            mongo_id = mongo._insert(database, collection, record)
+                            out['results'].append(mongo_id)
+                            
+            except Exception, e:
+                out['errors'] = str(e)
+                out['status'] = 0
+                 
+            out['ok_records_number'] = len(ok_records)
             
     try:
         mongo.connection.close()

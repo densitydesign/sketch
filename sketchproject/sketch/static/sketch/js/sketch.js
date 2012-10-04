@@ -167,7 +167,7 @@ sketchjs.Sketch.prototype.objects = function(options, collection, data, successC
 
 /* import function */
 //TODO: add mapping
-sketchjs.Sketch.prototype.import = function(options, collection, format, data, commit, successCallback){
+sketchjs.Sketch.prototype.import = function(options, collection, parser, data, commit, successCallback){
 
     var db = options.database || this.database;
 
@@ -176,7 +176,7 @@ sketchjs.Sketch.prototype.import = function(options, collection, format, data, c
     if(Boolean(commit)){
         commitInteger = 1;
     } 
-    postData = {data : data, format : format, commit : commitInteger };
+    postData = {data : data, parser : parser, commit : commitInteger };
     
     $.ajax({
         type: 'POST',
