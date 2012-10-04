@@ -8,9 +8,7 @@ THERE IS NO STABLE RELEASE OF SKETCH AT THE MOMENT.
 
 * provide a backend for data-visualization web applications.
 * integrate with client side javascript visualization libraries (maps, charts, …)
-* ...
-…
-
+* ... 
 
 
 ## Features
@@ -38,7 +36,7 @@ This will install all python requirements.
 Let me repeat once more one thing: **USE VIRTUALENV**
 
 ### Documents database
-A reachable MongoDB server is also required for sketch.
+A reachable MongoDB server is also required for sketch to work.
 
 If you have mongodb installed in your developement server,
 you can use the "startlocalmongo.sh" script in the sketchproject folder.
@@ -74,9 +72,23 @@ And navigate to
 You should get the login page for Sketch Browser, shipped with the sketch_ui django application.
 
 
-## Design
+## Design and Usage
 
-TBW
+Sketch has two main features:
+
+* Importing data into the nosql database, optionally transforming and enriching records as they are imported.
+* Querying data over http with a REST interface, optionally performing some addtional process on the set of records matching the query.
+
+### Importing
+Importing data into sketch Some textual data to be imported
+
+* Telling sketch how to get records out from your data. This is done with RecordParsers.
+* Optionally, perform some *trasforms* while importing data. This is done with Mappers
+
+The results of an import task is having some records stored in a collection within MongoDB.
+
+### Querying
+
 
 
 
@@ -85,17 +97,22 @@ TBW
 
 ### Collections
 
-TBW
+A *Collection* within sketch represents bucket used to store a set of record objects. Each record belongs to a collection.
+
+A sketch collection directly maps to a MongoDB collection, and it is also represented by a Django model.
+
+
+### Record Parsers
+
+The record parser is the object used to convert data from a textual source into records.
+It is used at import time.
+
 
 ### Formatters
 
 TBW
 
-### Mappers
-
-TBW
-
-### Transfoms
+### Mappers and Transforms
 
 TBW
 
@@ -104,6 +121,8 @@ TBW
 TBW
 
 ## Management commands
+
+To simplify the management of objects some management functions are provided. They can be used from the 'manage.py' django script
 
 ### Importing data
 
@@ -115,7 +134,11 @@ TODO: explain syntax
 
 ## Javascript API
 
-TBW
+All operations within sketch can be performed by means of HTTP requests, using any client capable of doing GET and POST requests.
+
+In addition, sketch comes with a javascript api to facilitate the integration with javascript applications, providing means to perform all sketch operations directly from javascript.
+
+The js api is based on jquery.
 
 ## Example data
 
