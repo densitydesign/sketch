@@ -154,10 +154,10 @@ class Command(BaseCommand):
                 #creating the collection model and set owner=user if collection does not exits
                 #TODO: we could check again the number of allowed collections here, as in decorator
                 try:
-                    collectionInstance = sketch.models.SketchCollection.objects.get(name=collection)
+                    collectionInstance = sketch.models.SketchCollection.objects.get(name=collection, database=database)
                 except:
                     user = authmodels.User.objects.get(pk=1)
-                    collectionInstance = sketch.models.SketchCollection(owner=user, name=collection)
+                    collectionInstance = sketch.models.SketchCollection(owner=user, name=collection, database=database)
                     collectionInstance.save()
     
                 #finally inserting records

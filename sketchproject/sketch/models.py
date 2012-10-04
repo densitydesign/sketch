@@ -43,10 +43,13 @@ class SketchMapper(models.Model):
     
     
 class SketchCollection(models.Model):
-    name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200,)
+    name = database.CharField(max_length=200,)
     owner = models.ForeignKey(User)
     access_level = models.IntegerField(choices = SKETCH_ACCESS_LEVELS, null=True, blank=True)
     
+    class Meta:
+        unique_together = ['name', 'database']
     
     def __unicode__(self):
         return u'%s' % self.name

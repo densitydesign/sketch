@@ -404,9 +404,9 @@ def importCall(request, collection, database=None):
                     #creating the collection model and set owner=user if collection does not exits
                     #TODO: we could check again the number of allowed collections here, as in decorator
                     try:
-                        collectionInstance = SketchCollection.objects.get(name=collection)
+                        collectionInstance = SketchCollection.objects.get(name=collection, database=database)
                     except:
-                        collectionInstance = SketchCollection(owner=request.user, name=collection)
+                        collectionInstance = SketchCollection(owner=request.user, name=collection, database=database)
                         collectionInstance.save()
 
                     #finally inserting records
