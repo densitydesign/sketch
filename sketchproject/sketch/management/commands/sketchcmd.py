@@ -22,8 +22,10 @@ class Command(BaseCommand):
         help='selects database'),
         
         make_option('--drop-collection', action='store', dest='drop_collection', default='',
-        help='selects database'),
-
+        help='drops a collection'),
+        
+        make_option('--drop-database', action='store', dest='drop_database', default='',
+        help='drops a database'),
     
     )
     
@@ -43,7 +45,10 @@ class Command(BaseCommand):
         database = database or sketch.settings.MONGO_SERVER_DEFAULT_DB   
         
         drop_collection = options['drop_collection']
-        if drop_collection:
+        drop_database = options['drop_database']
+        
+        if drop_collection or drop_database:
+        
             mongo = sketch.mongowrapper.MongoWrapper()
             try:
                 mongo.connect()
@@ -51,8 +56,11 @@ class Command(BaseCommand):
                 print "Mongo connection error", str(err)
                 return
                 
-            mongo.dropCollection(database, drop_collection)
-                
+            if drop_collection:
+                mongo.dropCollection(database, drop_collection)
+            
+            if drop_database:
+                mongo.dropDatabase(database)
                 
             try:
                 mongo.connection.close()
