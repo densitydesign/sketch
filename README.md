@@ -74,13 +74,20 @@ You should get the login page for Sketch Browser, shipped with the sketch_ui dja
 
 ## Design and Usage
 
-Sketch has two main features:
+Sketch has these main features:
 
 * Importing data into the nosql database, optionally transforming and enriching records as they are imported.
 * Querying data over http with a REST interface, optionally performing some addtional process on the set of records matching the query.
 
+All the features are exposed in three ways:
+
+* with a RESTful service over the http protocol
+* with a javascript api based on jquery.ajax()
+* with django management commands
+
+
 ### Importing
-Importing data into sketch Some textual data to be imported
+Importing data into sketch involves these steps:
 
 * Telling sketch how to get records out from your data. This is done with RecordParsers.
 * Optionally, perform some *trasforms* while importing data. This is done with Mappers
@@ -88,6 +95,11 @@ Importing data into sketch Some textual data to be imported
 The results of an import task is having some records stored in a collection within MongoDB.
 
 ### Querying
+
+* Results can be filtered with ..
+* Results can be formatted with … The objects responsible for this task are *Formatters*
+
+### Processing
 
 
 
@@ -122,13 +134,58 @@ TBW
 
 ## Management commands
 
-To simplify the management of objects some management functions are provided. They can be used from the 'manage.py' django script
+To simplify the management of objects some management functions are provided. They can be used from the 'manage.py' django script.
 
-### Importing data
+### sketchinfo
 
-Data can be imported from command line with the **sketchimport** management command.
-TODO: explain syntax
+The **sketchinfo** command can be used to perform sketch introspection from the command line, listing available databases, collections, parsers, formatters, mappers, transforms and processors available within the system.
 
+	python manage.py sketchinfo server|db|parsers|formatters|mappers|transforms|processors [--database database_name]   
+
+The required argument represents the type of introspection that needs to be performed.
+
+Command switches:
+
+* *--database* specifies the name of the database we are acting on [defaults to settings.MONGO_SERVER_DEFAULT_DB]
+
+
+### sketchimport
+
+Data can be imported from command line with the **sketchimport** management command. Data is imported from text files.
+	
+	python manage.py sketchimport  --collection collection_name --parser parser_name --datafile file_path [--database database_name] [--commit]   
+
+Command switches:
+
+* *--collection*  specifies the name of the collection we are acting on
+* *--parser-name* the RecordParser name to use during import, as specified in settings.ALLOWED_PARSERS
+* *--datafile* the path to a file to be imported
+* *--database* specifies the name of the database we are acting on [defaults to settings.MONGO_SERVER_DEFAULT_DB]
+* *--commit* if the *commit* flag is not set, data is not actually imported, but only checked. If this flag is specified, import is issued for records that can be imported, while problematic records are skipped.
+
+
+### sketchobjects
+
+The **sketchobjects** command lets you perform a query from the command line, getting results printed to stdout
+
+	python manage.py sketchobjects  --collection collection_name [--database database_name] [--limit limit] [--offset offset] [--query query] [--formatter formatter] 
+
+Command switches:
+
+* *--collection*  specifies the name of the collection we are acting on
+* *--database* specifies the name of the database we are acting on [defaults to settings.MONGO_SERVER_DEFAULT_DB]
+
+
+### sketchcmd
+The *sketchcmd* management command has the following syntax
+	
+	python manage.py sketchcmd [--database database_name] [[--drop-collection collection_name]|[--drop-database]
+
+Command switches:
+	
+* *--database* specifies the name of the database we are acting on [defaults to settings.MONGO_SERVER_DEFAULT_DB]
+* *--drop-collection* drops the collection passed with collection_name
+* *--drop-database* drops the database database_name passed with the --database switch
 
 
 
@@ -138,7 +195,7 @@ All operations within sketch can be performed by means of HTTP requests, using a
 
 In addition, sketch comes with a javascript api to facilitate the integration with javascript applications, providing means to perform all sketch operations directly from javascript.
 
-The js api is based on jquery.
+The js api is based on jquery, the only js dependency.
 
 ## Example data
 
