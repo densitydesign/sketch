@@ -11,17 +11,17 @@ The mapping is represented as a dictionary, where:
       and arguments to be passed in. This is a "trasformation describer".
       For each key in the mapping, the transformation describer needs the following keys:
     
-      transform:  the name of the transform function to be called
-      args: list of arguments to be passed to the function
+      transform:  the name of the transform function to be called.
+      args: list of arguments to be passed to the function.
     
-Keyword arguments are not supported at the moment.
-Each argument can be of two types:
+      Keyword arguments are not supported at the moment.
+      Each argument can be of two types:
 
-    * the name of a property of the original record. A lookup is performed and the value of
-      the given record property is passed to the transform. The special name '__self__' refers
-      to the whole record
+      * the name of a property of the original record. A lookup is performed and the value of
+        the given record property is passed to the transform. The special name '__self__' refers
+        to the whole record.
     
-    * another transformation descriptor
+      * another transformation descriptor.
 
 """
 
@@ -85,8 +85,9 @@ class RecordMapper(object):
         
         constants: dictionary of properties to be copied directly
                    to the record.
-                   Note that constanst are copied as last step, so if
+                   Note that constants are copied as last step, so if
                    its keys are already present in the record they will be 
+                   overwritten.
         """
     
         #TODO: is deepcopy necessary/useful?
