@@ -1,3 +1,10 @@
+"""
+processingmanager module.
+This module contains an instance of RecordProcessor,
+to be used to register processor funcions
+
+"""
+
 from recordprocessor import RecordProcessor
 import operator
 
