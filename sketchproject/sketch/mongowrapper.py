@@ -34,7 +34,11 @@ class MongoWrapper(object):
         collection = getattr(db, collection_name)
         return collection
         
-
+        
+    def dropDatabase(self, db_name, ):
+        self.connection.drop_database(db_name)
+            
+    
     def dropCollection(self, db_name, collection_name):
         db = self.getDb(db_name)
         collection = getattr(db, collection_name)
