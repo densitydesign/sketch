@@ -1,3 +1,30 @@
+"""
+mapper module
+
+In sketch, a mapping is a set of operations to be performed on a record, adding or modifying
+its properties.
+
+The mapping is represented as a dictionary, where: 
+
+    * keys represent the name of a property to be set on the record object
+    * values are dictionaries describing functions to be called to calculate the property
+      and arguments to be passed in. This is a "trasformation describer".
+      For each key in the mapping, the transformation describer needs the following keys:
+    
+      transform:  the name of the transform function to be called
+      args: list of arguments to be passed to the function
+    
+Keyword arguments are not supported at the moment.
+Each argument can be of two types:
+
+    * the name of a property of the original record. A lookup is performed and the value of
+      the given record property is passed to the transform. The special name '__self__' refers
+      to the whole record
+    
+    * another transformation descriptor
+
+"""
+
 from copy import deepcopy
 import inspectutils
 
@@ -9,6 +36,7 @@ class RecordMapper(object):
     def registerTransform(self, function):
         """
         register a transform function. 
+        The function will be referenced by its name
         It would be nice to add an exception policy.
         """
         self.transformFunctions[function.__name__] = function
@@ -19,7 +47,8 @@ class RecordMapper(object):
         
         
     def mapField(self, record, mappingItem):
-        
+        """
+        """
         mappingItemType = type(mappingItem)
 
         if mappingItemType is str:
@@ -31,7 +60,7 @@ class RecordMapper(object):
             transform = mappingItem['transform']
             args = mappingItem.get('args', tuple())       
             
-            #TODO (maybe): implement kwargs
+            #TODO: implement kwargs
             #kwargs = mappingItem.get('kwargs', dict())
 
             recordArgs = []
@@ -47,6 +76,19 @@ class RecordMapper(object):
         
 
     def mapRecord(self, record, mapping, constants={}):
+        """
+        Maps a record, given a mapping.
+        
+        record: a dictionary
+        
+        mapping: a dictionary containing the mapper description
+        
+        constants: dictionary of properties to be copied directly
+                   to the record.
+                   Note that constanst are copied as last step, so if
+                   its keys are already present in the record they will be 
+        """
+    
         #TODO: is deepcopy necessary/useful?
         newRecord = deepcopy(record)
     
@@ -58,6 +100,8 @@ class RecordMapper(object):
         return newRecord
         
     def validateMapping(self, mapping):
+        """
+        """
         
         #element validation logic
         #TODO: use recursively if other transforms are found in args or kwargs
@@ -98,6 +142,10 @@ class RecordMapper(object):
         return True
 
 
+
+
+
+#TODO: move this to a test case
 if __name__ == '__main__':
 
     mapper = RecordMapper()
